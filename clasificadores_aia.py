@@ -97,7 +97,7 @@
 
 import numpy as np
 import random
-
+import carga_datos
 
 
 
@@ -175,16 +175,29 @@ def particion_entr_prueba(X,y,test=0.20):
     nos vamos a valer de random.shuffle y slice
     '''
     completedata=np.concatenate((X,y),axis=1)
-    x_e,x_t,y_e,y_t=np.array()
+    x_e,x_t=[]
     for c in classes:
         filtereddata=[]
         for element in completedata:
             if element[-1]==c:
                 filtereddata.append(element)
         #tenemos todos los datos filtrados para una clase c
-        
-    
-    return 0
+        #mezclamos cada uno de los datos
+        random.shuffle(filtereddata)
+        #dividimos en entrenamiento y prueba
+        longitud=len(filtereddata)
+        i_seccion=int((1-test)*longitud)
+        x_e += filtereddata[:i_seccion]
+        x_t += filtereddata[i_seccion:]
+    #una vez que tenemos todas las listas terminadas, las convertimos a array
+    #y procedemos a dividir cada parte en x_t,x_e,y_t e y_e
+    x_e= np.array(x_e)
+    x_t= np.array(x_t)
+    x_e_d=x_e[:,:-1]
+    y_e=x_e[:,-1]
+    x_t_d=x_t[:,:-1]
+    y_t=x_t[:,-1]      
+    return x_e_d,x_t_d,y_e,y_t
 
 
 
