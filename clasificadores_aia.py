@@ -11,13 +11,13 @@
 # --------------------------------------------------------------------------
 # Autor(a) del trabajo:
 #
-# APELLIDOS:
-# NOMBRE: 
+# APELLIDOS: Calcedo Vázquez
+# NOMBRE: Ignacio
 #
 # Segundo componente (si se trata de un grupo):
 #
-# APELLIDOS:
-# NOMBRE:
+# APELLIDOS: Philibert
+# NOMBRE: Juliette
 # ----------------------------------------------------------------------------
 
 
