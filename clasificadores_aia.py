@@ -96,7 +96,7 @@
 
 
 import numpy as np
-
+import random
 
 
 
@@ -166,7 +166,25 @@ import numpy as np
 
 def particion_entr_prueba(X,y,test=0.20):
     
+    classes=list(set(y))
     
+    '''
+    obtenemos un array completo de los datos con su correspondiente clase.
+    una vez creado esto, por cada clase posible vamos creando dos grupos,
+    uno de test y otro de entrenamiento, siguiendo la proporción. Para ello,
+    nos vamos a valer de random.shuffle y slice
+    '''
+    completedata=np.concatenate((X,y),axis=1)
+    x_e,x_t,y_e,y_t=np.array()
+    for c in classes:
+        filtereddata=[]
+        for element in completedata:
+            if element[-1]==c:
+                filtereddata.append(element)
+        #tenemos todos los datos filtrados para una clase c
+        
+    
+    return 0
 
 
 
