@@ -174,8 +174,9 @@ def particion_entr_prueba(X,y,test=0.20):
     uno de test y otro de entrenamiento, siguiendo la proporción. Para ello,
     nos vamos a valer de random.shuffle y slice
     '''
-    completedata=np.concatenate((X,y),axis=1)
-    x_e,x_t=[]
+    completedata=np.concatenate((X,y.reshape(len(y),1)),axis=1)
+    x_e=[]
+    x_t=[]
     for c in classes:
         filtereddata=[]
         for element in completedata:
