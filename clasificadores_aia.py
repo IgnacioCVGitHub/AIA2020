@@ -526,9 +526,13 @@ class ClasificadorNoEntrenado(Exception): pass
 # -----------------------------------------------------------------
 
 
-
-
-
+class RegresionLogisticaMiniBatch():
+    def __init__(self,clases=[0,1],normalizacion=False,
+                rate=0.1,rate_decay=False,batch_tam=64,n_epochs=200,
+                 pesos_iniciales=None): pass
+    def entrena(self,X,y): pass
+    def clasifica_prob(self,ejemplo): pass
+    def clasifica(self,ejemplo):pass
 
 
 
