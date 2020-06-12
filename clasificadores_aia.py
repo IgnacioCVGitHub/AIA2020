@@ -555,10 +555,17 @@ class RegresionLogisticaMiniBatch():
         n_epochs=self.n_epochs
         big_chunk=np.concatenate((X,y),axis=1)
         batch_tam=self.batch_tam
-        for _ in range(n_epochs):
+        tasa_l=self.rate
+        for i in range(n_epochs):
             chunks=np.array_split(big_chunk,batch_tam)
-            for b in chunks:
+            #dividimos los datos en subconjuntos
+            for block in chunks:
+                #tomamos un subgrupo de datos
+                #para cada subconjunto actualizamos
+                for array in blocks:
+                    
                 
+                    
             
         
         
