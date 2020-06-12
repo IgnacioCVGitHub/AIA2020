@@ -526,11 +526,36 @@ class ClasificadorNoEntrenado(Exception): pass
 # -----------------------------------------------------------------
 
 
+from scipy.special import expit    
+
+def sigmoide(x):
+    return expit(x)
+
 class RegresionLogisticaMiniBatch():
     def __init__(self,clases=[0,1],normalizacion=False,
                 rate=0.1,rate_decay=False,batch_tam=64,n_epochs=200,
-                 pesos_iniciales=None): pass
-    def entrena(self,X,y): pass
+                 pesos_iniciales=None):
+        self.clases=clases
+        self.normalizacion=normalizacion
+        self.rate=rate
+        self.rate_decay=rate_decay
+        self.batch_tam=batch_tam
+        self.n_epochs=n_epochs
+        self.pesos_iniciales=pesos_iniciales
+        self.pesos=list() 
+        #si pesos está vacía, el clasificador no está entrenado
+        
+    def entrena(self,X,y):
+        pesos=[]
+        if self.pesos_iniciales!=None:
+            pesos=list(self.pesos_iniciales)
+        else:
+            dims=X.shape
+            pesos=[random.random() for i in range(dims[1])]
+        
+            
+        
+        
     def clasifica_prob(self,ejemplo): pass
     def clasifica(self,ejemplo):pass
 
