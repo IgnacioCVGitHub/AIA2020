@@ -533,6 +533,11 @@ class ErrorClasificador(ClasificadorNoEntrenado):
 
 from scipy.special import expit    
 
+def suma_paralelo(a1,a2):
+    #recibe dos arrays y devuleve un array con las sumas de sus componentes
+    #sumadas en paralelo
+    a3=[ a1[i]+a2[i] for i in range (len(a1))]
+    return a3
 def sigmoide(x):
     return expit(x)
 
@@ -540,7 +545,9 @@ class RegresionLogisticaMiniBatch():
     def __init__(self,clases=[0,1],normalizacion=False,
                 rate=0.1,rate_decay=False,batch_tam=64,n_epochs=200,
                  pesos_iniciales=None):
-        self.clases=clases
+        mapa_clases={clases[0]:0,clases[1]:1}
+        self.clases=mapa_clases.values()
+        self.mapa_clases=mapa_clases
         self.normalizacion=normalizacion
         self.rate=rate
         self.rate_decay=rate_decay
@@ -551,6 +558,7 @@ class RegresionLogisticaMiniBatch():
         #si pesos está vacía, el clasificador no está entrenado
         
     def entrena(self,X,y):
+        mapa=self.mapa_clases
         pesos=[]
         if self.pesos_iniciales!=None:
             pesos=list(self.pesos_iniciales)
@@ -561,15 +569,25 @@ class RegresionLogisticaMiniBatch():
         big_chunk=np.concatenate((X,y),axis=1)
         batch_tam=self.batch_tam
         tasa_l=self.rate
+        tasa_l0=self.rate
         for i in range(n_epochs):
             chunks=np.array_split(big_chunk,batch_tam)
             #dividimos los datos en subconjuntos
             for block in chunks:
                 #tomamos un subgrupo de datos
                 #para cada subconjunto actualizamos
-                for array in blocks:
-                    
-                
+                pesos_previos=[0.0 for _ in block[0][:-1]]
+                for array in block:
+                    sum_a=mapa.get(array[-1])-sigmoide(np.dot(pesos,array[:-1]))
+                    sum_t=np.dot(sum_a,array[:-1])
+                    pesos_previos=suma_paralelo(pesos_previos,sum_t)
+                #una vez hecho todo el sumatorio de los elementos del subgrupo,
+                #actualizamos los pesos reales multiplicando por la tasa de
+                #aprendizaje y sumando
+                act_b=np.dot(tasa_l,pesos_previos)
+                pesos=suma_paralelo(pesos,act_b)
+            if self.rate_decay==True:
+                tasa_l=tasa_l0*(1/(1+i))
                     
             
         
