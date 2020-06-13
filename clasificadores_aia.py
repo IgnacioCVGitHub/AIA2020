@@ -263,8 +263,13 @@ def particion_entr_prueba(X,y,test=0.20):
 # Si se llama a los métodos de clasificación antes de entrenar el modelo, se
 # debe devolver (con raise) una excepción:
 
-class ClasificadorNoEntrenado(Exception): pass
-
+class ClasificadorNoEntrenado(Exception):pass
+class ErrorClasificador(ClasificadorNoEntrenado):
+    def __init__(self,cadena):
+        self.args={cadena}
+        self.cadena=cadena
+    def mensaje(self):
+        return self.cadena
 
 # ------------------------------------------------------------------------------
 # Ejemplo "jugar al tenis":
