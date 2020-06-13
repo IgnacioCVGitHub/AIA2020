@@ -588,6 +588,7 @@ class RegresionLogisticaMiniBatch():
                 pesos=suma_paralelo(pesos,act_b)
             if self.rate_decay==True:
                 tasa_l=tasa_l0*(1/(1+i))
+        self.pesos=pesos
                     
             
         
