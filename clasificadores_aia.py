@@ -566,7 +566,9 @@ class RegresionLogisticaMiniBatch():
             dims=X.shape
             pesos=[random.random() for i in range(dims[1])]
         n_epochs=self.n_epochs
-        big_chunk=np.concatenate((X,y),axis=1)
+        y_2=y.reshape(len(y),1)
+        
+        big_chunk=np.concatenate((X,y_2),axis=1)
         batch_tam=self.batch_tam
         tasa_l=self.rate
         tasa_l0=self.rate
