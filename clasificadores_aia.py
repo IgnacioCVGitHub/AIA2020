@@ -595,9 +595,19 @@ class RegresionLogisticaMiniBatch():
             
         
         
-    def clasifica_prob(self,ejemplo): pass
-    def clasifica(self,ejemplo):pass
-
+    def clasifica_prob(self,ejemplo): 
+        if not self.pesos:
+            raise ErrorClasificador("Clasificador no entrenado")
+        else:
+            result=sigmoide(np.dot(self.pesos,ejemplo))
+            return result
+    def clasifica(self,ejemplo):
+        if not self.pesos:
+            raise ErrorClasificador("Clasificador no entrenado")
+        else:
+            result=sigmoide(np.dot(self.pesos,ejemplo))
+            return result
+            
 
 
 
