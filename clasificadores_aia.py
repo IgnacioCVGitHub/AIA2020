@@ -98,7 +98,7 @@
 import numpy as np
 import random
 import carga_datos
-
+import operator
 
 
 
@@ -166,7 +166,7 @@ import carga_datos
 
 def particion_entr_prueba(X,y,test=0.20):
     
-    classes=list(set(y))
+    classes = list(set(y))
     
     '''
     obtenemos un array completo de los datos con su correspondiente clase.
@@ -174,19 +174,19 @@ def particion_entr_prueba(X,y,test=0.20):
     uno de test y otro de entrenamiento, siguiendo la proporción. Para ello,
     nos vamos a valer de random.shuffle y slice
     '''
-    completedata=np.concatenate((X,y.reshape(len(y),1)),axis=1)
-    x_e=[]
-    x_t=[]
+    completedata = np.concatenate((X, y.reshape(len(y), 1)), axis=1)
+    x_e = []
+    x_t = []
     for c in classes:
-        filtereddata=[]
+        filtereddata = []
         for element in completedata:
-            if element[-1]==c:
+            if element[-1] == c:
                 filtereddata.append(element)
         #tenemos todos los datos filtrados para una clase c
         #mezclamos cada uno de los datos
         random.shuffle(filtereddata)
         #dividimos en entrenamiento y prueba
-        longitud=len(filtereddata)
+        longitud= len(filtereddata)
         i_seccion=int((1-test)*longitud)
         x_e += filtereddata[:i_seccion]
         x_t += filtereddata[i_seccion:]
@@ -194,11 +194,11 @@ def particion_entr_prueba(X,y,test=0.20):
     #y procedemos a dividir cada parte en x_t,x_e,y_t e y_e
     x_e= np.array(x_e)
     x_t= np.array(x_t)
-    x_e_d=x_e[:,:-1]
-    y_e=x_e[:,-1]
-    x_t_d=x_t[:,:-1]
-    y_t=x_t[:,-1]      
-    return x_e_d,x_t_d,y_e,y_t
+    x_e_d = x_e[:, :-1]
+    y_e = x_e[:, -1]
+    x_t_d = x_t[:, :-1]
+    y_t = x_t[:, -1]
+    return x_e_d, x_t_d, y_e, y_t
 
 
 
@@ -269,7 +269,7 @@ class ClasificadorNoEntrenado(Exception): pass
 # ------------------------------------------------------------------------------
 # Ejemplo "jugar al tenis":
 
-# >>> nb_tenis=NaiveBayes(k=0.5)
+# >>> b_tenis=NaiveBayes(k=0.5)n
 # >>> nb_tenis.entrena(X_tenis,y_tenis)
 # >>> ej_tenis=np.array(['Soleado','Baja','Alta','Fuerte'])
 # >>> nb_tenis.clasifica_prob(ej_tenis)
@@ -279,10 +279,69 @@ class ClasificadorNoEntrenado(Exception): pass
 # ------------------------------------------------------------------------------
 
 
+class NaiveBayes():
+    k = 0
+    priori = None # probabilidad a priori
+    cond = None   # probabilidad condicionadas
+
+    def __init__(self, k=1):
+        """
+        Inicialización del modelo Naive Bayes
+        :param k: constante de suavizado
+        """
+        self.k = k
+
+    def entrena(self, X, y):
+        frec_clases = np.unique(y, return_counts=True)
+        N = len(y)                        # numero de ejemplo en los datos
+        num_clase = len(frec_clases[0])   # numero de clase
+        num_at = len(X[0])                # numero de atributos para cada ejemplo
+        complete_data = np.concatenate((X, y.reshape(len(y), 1)), axis=1)
+
+        self.priori = {frec_clases[0][c]: frec_clases[1][c]/N for c in range(num_clase)}
+        self.cond = {}
+        for c in range(num_clase):
+            X_clase = complete_data[complete_data[:, -1] == frec_clases[0][c]][:, 0:-1]   # datos que pertenecen a la clase c solo
+            for a in range(num_at):
+                tipo_a = np.unique(X_clase[:, a], return_counts=True)   # los tipos de un atributo
+                for t in range(len(tipo_a[0])):
+                    self.cond[(a, frec_clases[0][c], tipo_a[0][t])] = (tipo_a[1][t]+self.k)/(frec_clases[1][c]+self.k*len(tipo_a[0]))
+
+    def clasifica_prob(self, ejemplo):
+        """
+        Devuelve las log-probabilidades de clase de un ejemplo
+        """
+        proba = {c: (self.priori[c]) for c in self.priori.keys()}
+        for c in self.priori.keys():
+            num_a = 0
+            for e in ejemplo:
+                proba[c] *= (self.cond[(num_a, c, e)])
+                num_a += 1
+        total = sum(proba.values())
+
+        for c in self.priori.keys():
+            proba[c] = proba[c] / total
+        return proba
+
+    def clasifica(self, ejemplo):
+        """
+        Devuelve la clase en la que es el ejmplo dado en argumento.
+        """
+        proba_ej = self.clasifica_prob(ejemplo)
+        clasificacion = max(proba_ej.items(), key=operator.itemgetter(1))[0] # equivalente a un argmax en un diccionario
+        return clasificacion
 
 
+X_tenis = carga_datos.X_tenis
+y_tenis = carga_datos.y_tenis
 
-
+nb_tenis = NaiveBayes(k=0.5)
+nb_tenis.entrena(X_tenis, y_tenis)
+ej_tenis = np.array(['Soleado', 'Baja', 'Alta', 'Fuerte'])
+print(nb_tenis.clasifica_prob(ej_tenis))
+# {'no': 0.7564841498559081, 'si': 0.24351585014409202}
+print(nb_tenis.clasifica(ej_tenis))
+# 'no'
 
 
 
@@ -303,7 +362,7 @@ class ClasificadorNoEntrenado(Exception): pass
 # 0.9285714285714286
 # ------------------------------------------------------------------------------
 
-
+#def rendimiento(clasificador, X, y):
 
 
 
