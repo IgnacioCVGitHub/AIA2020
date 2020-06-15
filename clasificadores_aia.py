@@ -546,8 +546,10 @@ class RegresionLogisticaMiniBatch():
                 rate=0.1,rate_decay=False,batch_tam=64,n_epochs=200,
                  pesos_iniciales=None):
         mapa_clases={clases[0]:0,clases[1]:1}
+        mapa_reverse={0:clases[0],1:clases[1]}
         self.clases=mapa_clases.values()
         self.mapa_clases=mapa_clases
+        self.mapa_reverse=mapa_reverse
         self.normalizacion=normalizacion
         self.rate=rate
         self.rate_decay=rate_decay
@@ -606,7 +608,7 @@ class RegresionLogisticaMiniBatch():
             raise ErrorClasificador("Clasificador no entrenado")
         else:
             result=sigmoide(np.dot(self.pesos,ejemplo))
-            return result
+            return self.mapa_reverse.get(round(result))
             
 
 
