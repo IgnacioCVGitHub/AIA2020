@@ -194,8 +194,8 @@ def particion_entr_prueba(X, y, test=0.20):
 
     #una vez que tenemos todas las listas terminadas, las convertimos a array
     #y procedemos a dividir cada parte en x_t,x_e,y_t e y_e
-    x_e= np.array(x_e,dtype=np.float64)
-    x_t= np.array(x_t,dtype=np.float64)
+    x_e= np.array(x_e)
+    x_t= np.array(x_t)
 
     x_e_d = x_e[:, :-1]
     y_e = x_e[:, -1]
