@@ -425,7 +425,7 @@ t = 0.3
 print("Separacion de los datos en ", 100-t*100, "% de entranamiento y ", 100*t, "% de prueba.\n")
 X_train_votos, X_test_votos, y_train_votos, y_test_votos = particion_entr_prueba(X_votos, y_votos, test=t)
 
-K = [0.5, 1, 5, 10, 100]
+K = [0.1, 0.5, 1, 5, 10, 100]
 
 for k in K:
     print("k=", k)
@@ -445,7 +445,7 @@ t = 0.3
 print("Separacion de los datos en ", 100-t*100, "% de entranamiento y ", 100*t, "% de prueba.\n")
 X_train_credito, X_test_credito, y_train_credito, y_test_credito = particion_entr_prueba(X_credito, y_credito, test=t)
 
-K = [0.5, 1, 5, 10, 100, 200, 300]
+K = [0.1, 0.5, 1, 5, 10, 100, 200, 300]
 
 for k in K:
     print("k=", k)
@@ -546,9 +546,29 @@ def rendimiento_validacion_cruzada(clase_clasificador, params, X, y, n=5):
     """
 
     completedata = np.concatenate((X, y.reshape(len(y), 1)), axis=1)
+    completedata = np.array(completedata)
     N = len(completedata)  # tamaño de los datos
-    for i in range(n):
-        clasificador = clase_clasificador()
+    suma_rend = 0
+
+    inicio = 0
+    fin = int(N/n)
+
+    for i in range(1, n):
+        clasificador = clase_clasificador(**params)
+        X_train = np.concatenate((X[0:inicio, :-1], X[fin:, :-1]))
+        y_train = np.concatenate((X[0:inicio, -1], X[fin:, -1]))
+        X_test = X[inicio:fin, :-1]
+        y_test = X[inicio:fin, -1]
+        clasificador.entrena(X_train, y_train)
+        print(rendimiento(clasificador, X_test, y_test))
+        suma_rend += rendimiento(clasificador, X_test, y_test)
+        inicio = fin
+        fin += int(N/n)
+    return suma_rend/n
+
+Xe_votos = carga_datos.X_votos
+ye_votos = carga_datos.y_votos
+print(rendimiento_validacion_cruzada(NaiveBayes, {"k": 1}, Xe_votos, ye_votos, n=4))
 
 # ========================================================
 # EJERCICIO 4: MODELOS LINEALES PARA CLASIFICACIÓN BINARIA
