@@ -546,7 +546,7 @@ def rendimiento_validacion_cruzada(clase_clasificador, params, X, y, n=5):
     """
 
     completedata = np.concatenate((X, y.reshape(len(y), 1)), axis=1)
-    completedata = np.array(completedata)
+    #completedata = np.array(completedata)
     N = len(completedata)  # tamaño de los datos
     suma_rend = 0
 
@@ -555,12 +555,11 @@ def rendimiento_validacion_cruzada(clase_clasificador, params, X, y, n=5):
 
     for i in range(1, n):
         clasificador = clase_clasificador(**params)
-        X_train = np.concatenate((X[0:inicio, :-1], X[fin:, :-1]))
-        y_train = np.concatenate((X[0:inicio, -1], X[fin:, -1]))
-        X_test = X[inicio:fin, :-1]
-        y_test = X[inicio:fin, -1]
+        X_train = np.concatenate((completedata[0:inicio, :-1], completedata[fin:, :-1]))
+        y_train = np.concatenate((completedata[0:inicio, -1], completedata[fin:, -1]))
+        X_test = completedata[inicio:fin, :-1]
+        y_test = completedata[inicio:fin, -1]
         clasificador.entrena(X_train, y_train)
-        print(rendimiento(clasificador, X_test, y_test))
         suma_rend += rendimiento(clasificador, X_test, y_test)
         inicio = fin
         fin += int(N/n)
@@ -836,9 +835,14 @@ no será necesario normalizar'''
 
 
 
+lr_votos = RegresionLogisticaMiniBatch(rate=0.1, rate_decay=True, n_epochs=1000)
+lr_votos2 = RegresionLogisticaMiniBatch(rate=0.25, rate_decay=True, n_epochs=2500)
+lr_votos3 = RegresionLogisticaMiniBatch(rate=0.1, rate_decay=True, n_epochs=1000, 
+                                        batch_tam=128)
+lr_votos4 = RegresionLogisticaMiniBatch(rate=0.1, rate_decay=False, n_epochs=1000,
+                                       batch_tam=256)
 
-
-
+lr_votos5 = RegresionLogisticaMiniBatch(rate=0.1, rate_decay=True, n_epochs=1000)
 
 
 
