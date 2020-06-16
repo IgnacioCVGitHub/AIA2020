@@ -661,12 +661,14 @@ class RegresionLogisticaMiniBatch():
             
             for i in range(X.shape[1]):
                 value_array=X[:,i]
-                media=np.mean(value_array)
-                desv=statistics.stdev(value_array)
-                norm_params[i]=(media,desv)
+                media=np.mean(value_array)  #creamos la media de los valores
+                desv=statistics.stdev(value_array) #creamos la desviación típica
+                norm_params[i]=(media,desv) #los introducimos en el diccionario
             self.norm_params=norm_params
                     
-        big_chunk=np.concatenate((X,y_2),axis=1)
+        #merge de los array para trabajar mejor con ellos    
+        big_chunk=np.concatenate((X,y_2),axis=1) 
+        #inicialización de parámetros
         batch_tam=self.batch_tam
         tasa_l=self.rate
         tasa_l0=self.rate
