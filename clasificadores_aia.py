@@ -802,10 +802,17 @@ rendimiento(lr_cancer, normaliza(Xe_cancer), ye_cancer)
 
 # Mostrar el proceso realizado en cada caso, y los rendimientos finales obtenidos. 
 
+'''Vamos a procceder a crear para cada conjunto de datos distintos clasificadores
+y probar sus rendimientos. Para ello, usaremos una distribución 80-20 para probar 
+los distintos conjuntos
 
+'''
 
+#Votos de congresistas
 
-
+'''Para este caso, no estimamos que sea necesaria la normalización de datos.
+Los valores enteros oscilan entre -1 y 1, y las unidades son identicas, por lo que
+no será necesario normalizar'''
 
 
 
