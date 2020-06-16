@@ -164,7 +164,8 @@ import operator
 #  array([81, 91, 88]))
 # ------------------------------------------------------------------
 
-def particion_entr_prueba(X,y,test=0.20):
+
+def particion_entr_prueba(X, y, test=0.20):
     
     classes = list(set(y))
     
@@ -182,18 +183,18 @@ def particion_entr_prueba(X,y,test=0.20):
         for element in completedata:
             if element[-1] == c:
                 filtereddata.append(element)
-        #tenemos todos los datos filtrados para una clase c
-        #mezclamos cada uno de los datos
+        # tenemos todos los datos filtrados para una clase c
+        # mezclamos cada uno de los datos
         random.shuffle(filtereddata)
-        #dividimos en entrenamiento y prueba
+        # dividimos en entrenamiento y prueba
         longitud= len(filtereddata)
         i_seccion=int((1-test)*longitud)
         x_e += filtereddata[:i_seccion]
         x_t += filtereddata[i_seccion:]
-    #una vez que tenemos todas las listas terminadas, las convertimos a array
-    #y procedemos a dividir cada parte en x_t,x_e,y_t e y_e
-    x_e= np.array(x_e)
-    x_t= np.array(x_t)
+    # una vez que tenemos todas las listas terminadas, las convertimos a array
+    # y procedemos a dividir cada parte en x_t,x_e,y_t e y_e
+    x_e = np.array(x_e)
+    x_t = np.array(x_t)
     x_e_d = x_e[:, :-1]
     y_e = x_e[:, -1]
     x_t_d = x_t[:, :-1]
@@ -263,11 +264,15 @@ def particion_entr_prueba(X,y,test=0.20):
 # Si se llama a los métodos de clasificación antes de entrenar el modelo, se
 # debe devolver (con raise) una excepción:
 
+
 class ClasificadorNoEntrenado(Exception):pass
+
+
 class ErrorClasificador(ClasificadorNoEntrenado):
-    def __init__(self,cadena):
-        self.args={cadena}
-        self.cadena=cadena
+    def __init__(self, cadena):
+        self.args = {cadena}
+        self.cadena = cadena
+
     def mensaje(self):
         return self.cadena
 
@@ -408,14 +413,67 @@ print(rendimiento(nb_tenis, X_tenis, y_tenis))
 # caso, y los rendimientos obtenidos.  
 
 
+# - Votos de congresistas US
+print("-----NAIVE BAYER ------\n")
+print("VOTOS DE CONGRESISTAS US \n")
 
+X_votos = carga_datos.X_votos
+y_votos = carga_datos.y_votos
+t = 0.3
+print("Separacion de los datos en ", 100-t*100, "% de entranamiento y ", 100*t, "% de prueba.\n")
+X_train_votos, X_test_votos, y_train_votos, y_test_votos = particion_entr_prueba(X_votos, y_votos, test=t)
 
+K = [0.5, 1, 5, 10, 100]
 
+for k in K:
+    print("k=", k)
+    nb_votos = NaiveBayes(k=k)
+    nb_votos.entrena(X_train_votos, y_train_votos)
+    print("Rendimiento sobre conjunto de entrenamiento", rendimiento(nb_votos, X_train_votos, y_train_votos))
+    print("Rendimiento sobre conjunto de test", rendimiento(nb_votos, X_test_votos, y_test_votos), "\n")
 
+print("------------\n")
+# - Concesión de prestamos
 
+print("CONCESION DE PRESTAMOS \n")
 
+X_credito = carga_datos.X_credito
+y_credito = carga_datos.y_credito
+t = 0.3
+print("Separacion de los datos en ", 100-t*100, "% de entranamiento y ", 100*t, "% de prueba.\n")
+X_train_credito, X_test_credito, y_train_credito, y_test_credito = particion_entr_prueba(X_credito, y_credito, test=t)
 
+K = [0.5, 1, 5, 10, 100, 200, 300]
 
+for k in K:
+    print("k=", k)
+    nb_credito = NaiveBayes(k=k)
+    nb_credito.entrena(X_train_credito, y_train_credito)
+    print("Rendimiento sobre conjunto de entrenamiento", rendimiento(nb_credito, X_train_credito, y_train_credito))
+    print("Rendimiento sobre conjunto de test", rendimiento(nb_credito, X_test_credito, y_test_credito), "\n")
+
+print("------------\n")
+# - Críticas de películas en IMDB
+"""
+print("CRITICAS DE PELICULAS EN IMDB \n")
+
+t = 0.3
+print("Separacion de los datos en ", 100-t*100, "% de entranamiento y ", 100*t, "% de prueba.\n")
+X_train_imdb, X_test_imdb, y_train_imdb, y_test_imdb = carga_datos.X_train_imdb, carga_datos.X_test_imdb, carga_datos.y_train_imdb, carga_datos.y_test_imdb
+
+K = [0.5, 1, 5, 10, 100, 200, 300]
+
+for k in K:
+    print("k=", k)
+    nb_imdb = NaiveBayes(k=k)
+    nb_imdb.entrena(X_train_imdb, y_train_imdb)
+    print("Rendimiento sobre conjunto de entrenamiento", rendimiento(nb_imdb, X_train_imdb, y_train_imdb))
+    print("Rendimiento sobre conjunto de test", rendimiento(nb_imdb, X_test_imdb, y_test_imdb), "\n")
+
+print("Obtenemos el mejor rendimiento con k=100 para las criticas de peliculas en IMBD.")
+"""
+
+print("----------------------------------------------------------------")
 
 
 
