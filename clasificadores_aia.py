@@ -618,8 +618,7 @@ def sigmoide(x):
 
 def normaliza(diccionario,array):
     #por el proceso de entrenamiento,  len(array) y el numero de claves es identico
-    '''hay problemas de overflow con los parámetros normales, así que
-    vamos a intentar corregir esto redondeando los numeros'''
+    '''hay problemas de overflow con los parámetros normales. No sé como arreglarlos'''
     for i in diccionario:
         media,desv=diccionario.get(i)
         array[i]=(array[i]-media)/desv
@@ -662,12 +661,11 @@ class RegresionLogisticaMiniBatch():
             
             for i in range(X.shape[1]):
                 value_array=X[:,i]
-                media=round(np.mean(value_array),4)
-                desv=round(statistics.stdev(value_array),4)
+                media=np.mean(value_array)
+                desv=statistics.stdev(value_array)
                 norm_params[i]=(media,desv)
             self.norm_params=norm_params
-                
-        
+                    
         big_chunk=np.concatenate((X,y_2),axis=1)
         batch_tam=self.batch_tam
         tasa_l=self.rate
@@ -682,6 +680,7 @@ class RegresionLogisticaMiniBatch():
                 for array in block:
                     if self.normalizacion:
                         array=normaliza(self.norm_params,array)
+                   
                     sum_a=mapa.get(array[-1])-sigmoide(np.dot(pesos,array[:-1]))
                     sum_t=np.dot(sum_a,array[:-1])
                     pesos_previos=suma_paralelo(pesos_previos,sum_t)
