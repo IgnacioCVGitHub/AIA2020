@@ -99,7 +99,7 @@ import numpy as np
 import random
 import carga_datos
 import operator
-
+import statistics
 
 
 
@@ -192,8 +192,8 @@ def particion_entr_prueba(X,y,test=0.20):
         x_t += filtereddata[i_seccion:]
     #una vez que tenemos todas las listas terminadas, las convertimos a array
     #y procedemos a dividir cada parte en x_t,x_e,y_t e y_e
-    x_e= np.array(x_e)
-    x_t= np.array(x_t)
+    x_e= np.array(x_e,dtype=np.float64)
+    x_t= np.array(x_t,dtype=np.float64)
     x_e_d = x_e[:, :-1]
     y_e = x_e[:, -1]
     x_t_d = x_t[:, :-1]
@@ -616,6 +616,15 @@ def suma_paralelo(a1,a2):
 def sigmoide(x):
     return expit(x)
 
+def normaliza(diccionario,array):
+    #por el proceso de entrenamiento,  len(array) y el numero de claves es identico
+    '''hay problemas de overflow con los parámetros normales, así que
+    vamos a intentar corregir esto redondeando los numeros'''
+    for i in diccionario:
+        media,desv=diccionario.get(i)
+        array[i]=(array[i]-media)/desv
+    return array
+    
 class RegresionLogisticaMiniBatch():
     def __init__(self,clases=[0,1],normalizacion=False,
                 rate=0.1,rate_decay=False,batch_tam=64,n_epochs=200,
@@ -626,6 +635,7 @@ class RegresionLogisticaMiniBatch():
         self.mapa_clases=mapa_clases
         self.mapa_reverse=mapa_reverse
         self.normalizacion=normalizacion
+        self.norm_params=None
         self.rate=rate
         self.rate_decay=rate_decay
         self.batch_tam=batch_tam
@@ -637,13 +647,26 @@ class RegresionLogisticaMiniBatch():
     def entrena(self,X,y):
         mapa=self.mapa_clases
         pesos=[]
-        if self.pesos_iniciales!=None:
+        if self.pesos_iniciales!=None:#tomamos los pesos directamente de la clase
             pesos=list(self.pesos_iniciales)
-        else:
+        else:#iniciamos los pesos de forma aleatoria
             dims=X.shape
             pesos=[random.random() for i in range(dims[1])]
         n_epochs=self.n_epochs
         y_2=y.reshape(len(y),1)
+        #creamos los parámetros de normalización en caso de ser necesario
+        if self.normalizacion:
+            norm_params=dict()
+            '''vamos a crear un diccionario que a cada indice de parámetro
+            le corresponda una tupla (media,desviación tipica)'''
+            
+            for i in range(X.shape[1]):
+                value_array=X[:,i]
+                media=round(np.mean(value_array),4)
+                desv=round(statistics.stdev(value_array),4)
+                norm_params[i]=(media,desv)
+            self.norm_params=norm_params
+                
         
         big_chunk=np.concatenate((X,y_2),axis=1)
         batch_tam=self.batch_tam
@@ -657,6 +680,8 @@ class RegresionLogisticaMiniBatch():
                 #para cada subconjunto actualizamos
                 pesos_previos=[0.0 for _ in block[0][:-1]]
                 for array in block:
+                    if self.normalizacion:
+                        array=normaliza(self.norm_params,array)
                     sum_a=mapa.get(array[-1])-sigmoide(np.dot(pesos,array[:-1]))
                     sum_t=np.dot(sum_a,array[:-1])
                     pesos_previos=suma_paralelo(pesos_previos,sum_t)
@@ -677,7 +702,14 @@ class RegresionLogisticaMiniBatch():
             raise ErrorClasificador("Clasificador no entrenado")
         else:
             result=sigmoide(np.dot(self.pesos,ejemplo))
-            return result
+            probs= dict()
+            mapa_clases=self.mapa_clases
+            for clase in mapa_clases:
+                if mapa_clases.get(clase)==1:
+                    probs[clase]=result
+                else:
+                    probs[clase]=1-result
+            return probs
     def clasifica(self,ejemplo):
         if not self.pesos:
             raise ErrorClasificador("Clasificador no entrenado")
