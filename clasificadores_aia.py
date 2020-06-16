@@ -688,6 +688,7 @@ class RegresionLogisticaMiniBatch():
                 #una vez hecho todo el sumatorio de los elementos del subgrupo,
                 #actualizamos los pesos reales multiplicando por la tasa de
                 #aprendizaje y sumando
+                
                 act_b=np.dot(tasa_l,pesos_previos)
                 pesos=suma_paralelo(pesos,act_b)
             if self.rate_decay==True:
