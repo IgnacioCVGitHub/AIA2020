@@ -292,20 +292,25 @@ class NaiveBayes():
         self.k = k
 
     def entrena(self, X, y):
-        frec_clases = np.unique(y, return_counts=True)
+        clases, frec_clases = np.unique(y, return_counts=True)
         N = len(y)                        # numero de ejemplo en los datos
-        num_clase = len(frec_clases[0])   # numero de clase
+        num_clase = len(clases)   # numero de clase
         num_at = len(X[0])                # numero de atributos para cada ejemplo
         complete_data = np.concatenate((X, y.reshape(len(y), 1)), axis=1)
 
-        self.priori = {frec_clases[0][c]: frec_clases[1][c]/N for c in range(num_clase)}
+        self.priori = {clases[c]: frec_clases[c]/N for c in range(num_clase)}
         self.cond = {}
-        for c in range(num_clase):
-            X_clase = complete_data[complete_data[:, -1] == frec_clases[0][c]][:, 0:-1]   # datos que pertenecen a la clase c solo
-            for a in range(num_at):
-                tipo_a = np.unique(X_clase[:, a], return_counts=True)   # los tipos de un atributo
-                for t in range(len(tipo_a[0])):
-                    self.cond[(a, frec_clases[0][c], tipo_a[0][t])] = (tipo_a[1][t]+self.k)/(frec_clases[1][c]+self.k*len(tipo_a[0]))
+        for a in range(num_at):
+            tipo_a = np.unique(X[:, a])  # recoger los tipos posibles de un atributo
+            for c in range(num_clase):
+                X_clase = complete_data[complete_data[:, -1] == clases[c]][:, 0:-1]  # datos que pertenecen a la clase c solo
+                for tipo in tipo_a:
+                    tipo_en_c, count_tipo_en_c = np.unique(X_clase[:, a], return_counts=True)
+                    if tipo not in tipo_en_c:
+                        count_a_en_c = 0
+                    else:
+                        count_a_en_c = count_tipo_en_c[np.where(tipo_en_c == tipo)]
+                    self.cond[(a, clases[c], tipo)] = (count_a_en_c + self.k) / (frec_clases[c] + self.k * len(tipo_a))
 
     def clasifica_prob(self, ejemplo):
         """
@@ -317,10 +322,10 @@ class NaiveBayes():
             for e in ejemplo:
                 proba[c] *= (self.cond[(num_a, c, e)])
                 num_a += 1
-        total = sum(proba.values())
 
+        total = sum(proba.values())
         for c in self.priori.keys():
-            proba[c] = proba[c] / total
+            proba[c] = proba[c] / total  # normalizar
         return proba
 
     def clasifica(self, ejemplo):
@@ -362,10 +367,21 @@ print(nb_tenis.clasifica(ej_tenis))
 # 0.9285714285714286
 # ------------------------------------------------------------------------------
 
-#def rendimiento(clasificador, X, y):
+
+def rendimiento(clasificador, X, y):
+    """
+    Devuelve el porcentaje de ejemplos bien clasificados
+    :param clasificador: clasificador a emplear
+    :param X: conjunto de ejemplos X
+    :param y: clasificacion esperada
+    """
+    pred = []  # tablero que contenga nuestra prediccion para todos los ejemplos en X con el clasificador dado en argumento
+    for i in range(len(X)):
+        pred.append(clasificador.clasifica(X[i]))
+    return len(np.where(pred == y)[0]) / len(X)
 
 
-
+print(rendimiento(nb_tenis, X_tenis, y_tenis))
 
 
 
