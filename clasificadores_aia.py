@@ -472,7 +472,6 @@ for k in K:
     print("Rendimiento sobre conjunto de entrenamiento", rendimiento(nb_imdb, X_train_imdb, y_train_imdb))
     print("Rendimiento sobre conjunto de test", rendimiento(nb_imdb, X_test_imdb, y_test_imdb), "\n")
 
-print("Obtenemos el mejor rendimiento con k=100 para las criticas de peliculas en IMBD.")
 """
 
 print("----------------------------------------------------------------")
@@ -535,17 +534,21 @@ print("----------------------------------------------------------------")
 #------------------------------------------------------------------------------
 
 
+def rendimiento_validacion_cruzada(clase_clasificador, params, X, y, n=5):
+    """
+    Devuelve el rendimiento medio de un clasificador, mediante la técnica de validación cruzada
+    :param clase_clasificador: nombre del clasificador a usar
+    :param params: diccionario con los valores de parametros a utilizar
+    :param X: datos
+    :param y: clasificacion esperada
+    :param n: numero de particiones
+    :return: rendimiento medio del clasificador
+    """
 
-
-
-
-
-
-
-
-
-
-
+    completedata = np.concatenate((X, y.reshape(len(y), 1)), axis=1)
+    N = len(completedata)  # tamaño de los datos
+    for i in range(n):
+        clasificador = clase_clasificador()
 
 # ========================================================
 # EJERCICIO 4: MODELOS LINEALES PARA CLASIFICACIÓN BINARIA
@@ -665,120 +668,118 @@ print("----------------------------------------------------------------")
 
 # -----------------------------------------------------------------
 
-
 from scipy.special import expit    
 
-def suma_paralelo(a1,a2):
-    #recibe dos arrays y devuleve un array con las sumas de sus componentes
-    #sumadas en paralelo
-    a3=[ a1[i]+a2[i] for i in range (len(a1))]
+
+def suma_paralelo(a1, a2):
+    """
+    Recibe dos arrays y devuelve un array con las sumas de sus componentes sumadas
+    """
+    a3 = [a1[i]+a2[i] for i in range(len(a1))]
     return a3
+
+
 def sigmoide(x):
     return expit(x)
 
-def normaliza(diccionario,array):
-    #por el proceso de entrenamiento,  len(array) y el numero de claves es identico
-    '''hay problemas de overflow con los parámetros normales. No sé como arreglarlos'''
-    for i in diccionario:
-        media,desv=diccionario.get(i)
-        array[i]=(array[i]-media)/desv
-    return array
-    
+
+def normaliza(X):
+    """Normaliza los datos"""
+    medias = np.mean(X, axis=0)
+    desvs = np.std(X, axis=0)
+    X_norm = (X - medias) / desvs
+    return X_norm
+
+
 class RegresionLogisticaMiniBatch():
-    def __init__(self,clases=[0,1],normalizacion=False,
-                rate=0.1,rate_decay=False,batch_tam=64,n_epochs=200,
+
+    def __init__(self, clases=[0, 1], normalizacion=False,
+                rate=0.1, rate_decay=False, batch_tam=64, n_epochs=200,
                  pesos_iniciales=None):
-        mapa_clases={clases[0]:0,clases[1]:1}
-        mapa_reverse={0:clases[0],1:clases[1]}
-        self.clases=mapa_clases.values()
-        self.mapa_clases=mapa_clases
-        self.mapa_reverse=mapa_reverse
-        self.normalizacion=normalizacion
-        self.norm_params=None
-        self.rate=rate
-        self.rate_decay=rate_decay
-        self.batch_tam=batch_tam
-        self.n_epochs=n_epochs
-        self.pesos_iniciales=pesos_iniciales
-        self.pesos=list() 
-        #si pesos está vacía, el clasificador no está entrenado
+        mapa_clases = {clases[0]: 0, clases[1]: 1}
+        mapa_reverse = {0: clases[0], 1: clases[1]}
+        self.clases = mapa_clases.values()
+        self.mapa_clases = mapa_clases
+        self.mapa_reverse = mapa_reverse
+        self.normalizacion = normalizacion
+        self.norm_params = None
+        self.rate = rate
+        self.rate_decay = rate_decay
+        self.batch_tam = batch_tam
+        self.n_epochs = n_epochs
+        self.pesos_iniciales = pesos_iniciales
+        self.pesos = list()
+        # si pesos está vacía, el clasificador no está entrenado
         
-    def entrena(self,X,y):
-        mapa=self.mapa_clases
-        pesos=[]
-        if self.pesos_iniciales!=None:#tomamos los pesos directamente de la clase
-            pesos=list(self.pesos_iniciales)
-        else:#iniciamos los pesos de forma aleatoria
-            dims=X.shape
-            pesos=[random.random() for i in range(dims[1])]
-        n_epochs=self.n_epochs
-        y_2=y.reshape(len(y),1)
-        #creamos los parámetros de normalización en caso de ser necesario
+    def entrena(self, X, y):
+        mapa = self.mapa_clases
+        pesos = []
+        if self.pesos_iniciales is not None:  # tomamos los pesos directamente de la clase
+            pesos = list(self.pesos_iniciales)
+        else:  # iniciamos los pesos de forma aleatoria
+            dims = X.shape
+            pesos = [random.random() for i in range(dims[1])]
+        n_epochs = self.n_epochs
+        y_2 = y.reshape(len(y), 1)
+
         if self.normalizacion:
-            norm_params=dict()
-            '''vamos a crear un diccionario que a cada indice de parámetro
-            le corresponda una tupla (media,desviación tipica)'''
-            
-            for i in range(X.shape[1]):
-                value_array=X[:,i]
-                media=np.mean(value_array)  #creamos la media de los valores
-                desv=statistics.stdev(value_array) #creamos la desviación típica
-                norm_params[i]=(media,desv) #los introducimos en el diccionario
-            self.norm_params=norm_params
+            X = normaliza(X)
                     
-        #merge de los array para trabajar mejor con ellos    
-        big_chunk=np.concatenate((X,y_2),axis=1) 
-        #inicialización de parámetros
-        batch_tam=self.batch_tam
-        tasa_l=self.rate
-        tasa_l0=self.rate
+        # merge de los array para trabajar mejor con ellos
+        big_chunk = np.concatenate((X, y_2), axis=1)
+        # inicialización de parámetros
+        batch_tam = self.batch_tam
+        tasa_l = self.rate
+        tasa_l0 = self.rate
         for i in range(n_epochs):
-            chunks=np.array_split(big_chunk,batch_tam)
-            #dividimos los datos en subconjuntos
+            chunks = np.array_split(big_chunk, batch_tam)
+            # dividimos los datos en subconjuntos
             for block in chunks:
-                #tomamos un subgrupo de datos
-                #para cada subconjunto actualizamos
-                pesos_previos=[0.0 for _ in block[0][:-1]]
+                # tomamos un subgrupo de datos
+                # para cada subconjunto actualizamos
+                pesos_previos = [0.0 for _ in block[0][:-1]]
                 for array in block:
-                    if self.normalizacion:
-                        array=normaliza(self.norm_params,array)
-                   
-                    sum_a=mapa.get(array[-1])-sigmoide(np.dot(pesos,array[:-1]))
-                    sum_t=np.dot(sum_a,array[:-1])
-                    pesos_previos=suma_paralelo(pesos_previos,sum_t)
-                #una vez hecho todo el sumatorio de los elementos del subgrupo,
-                #actualizamos los pesos reales multiplicando por la tasa de
-                #aprendizaje y sumando
+                    sum_a = mapa.get(array[-1])-sigmoide(np.dot(pesos, array[:-1]))
+                    sum_t = np.dot(sum_a, array[:-1])
+                    pesos_previos = suma_paralelo(pesos_previos, sum_t)
+                # una vez hecho todo el sumatorio de los elementos del subgrupo,
+                # actualizamos los pesos reales multiplicando por la tasa de
+                # aprendizaje y sumando
                 
-                act_b=np.dot(tasa_l,pesos_previos)
-                pesos=suma_paralelo(pesos,act_b)
-            if self.rate_decay==True:
-                tasa_l=tasa_l0*(1/(1+i))
-        self.pesos=pesos
-                    
-            
-        
-        
-    def clasifica_prob(self,ejemplo): 
+                act_b = np.dot(tasa_l, pesos_previos)
+                pesos = suma_paralelo(pesos, act_b)
+            if self.rate_decay:
+                tasa_l = tasa_l0*(1/(1+i))
+        self.pesos = pesos
+
+    def clasifica_prob(self, ejemplo):
         if not self.pesos:
             raise ErrorClasificador("Clasificador no entrenado")
         else:
-            result=sigmoide(np.dot(self.pesos,ejemplo))
-            probs= dict()
-            mapa_clases=self.mapa_clases
+            result = sigmoide(np.dot(self.pesos, ejemplo))
+            probs = dict()
+            mapa_clases = self.mapa_clases
             for clase in mapa_clases:
-                if mapa_clases.get(clase)==1:
-                    probs[clase]=result
+                if mapa_clases.get(clase) == 1:
+                    probs[clase] = result
                 else:
-                    probs[clase]=1-result
+                    probs[clase] = 1-result
             return probs
-    def clasifica(self,ejemplo):
+
+    def clasifica(self, ejemplo):
         if not self.pesos:
             raise ErrorClasificador("Clasificador no entrenado")
         else:
-            result=sigmoide(np.dot(self.pesos,ejemplo))
+            result = sigmoide(np.dot(self.pesos, ejemplo))
             return self.mapa_reverse.get(round(result))
             
+Xe_cancer, Xp_cancer, ye_cancer, yp_cancer = particion_entr_prueba(carga_datos.X_cancer,carga_datos.y_cancer)
+
+lr_cancer = RegresionLogisticaMiniBatch(rate=0.1, rate_decay=True, normalizacion=True, n_epochs=1000)
+
+lr_cancer.entrena(Xe_cancer, ye_cancer)
+
+rendimiento(lr_cancer, normaliza(Xe_cancer), ye_cancer)
 
 
 
