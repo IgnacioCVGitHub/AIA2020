@@ -345,7 +345,7 @@ class NaiveBayes():
         Devuelve la clase en la que es el ejmplo dado en argumento.
         """
         proba_ej = self.clasifica_prob(ejemplo)
-        clasificacion = max(proba_ej.items(), key=operator.itemgetter(1))[0] # equivalente a un argmax en un diccionario
+        clasificacion = max(proba_ej.items(), key=operator.itemgetter(1))[0]  # equivalente a un argmax en un diccionario
         return clasificacion
 
 
@@ -546,14 +546,14 @@ def rendimiento_validacion_cruzada(clase_clasificador, params, X, y, n=5):
     """
 
     completedata = np.concatenate((X, y.reshape(len(y), 1)), axis=1)
-    #completedata = np.array(completedata)
+
     N = len(completedata)  # tamaño de los datos
     suma_rend = 0
 
     inicio = 0
     fin = int(N/n)
 
-    for i in range(1, n):
+    for i in range(n):
         clasificador = clase_clasificador(**params)
         X_train = np.concatenate((completedata[0:inicio, :-1], completedata[fin:, :-1]))
         y_train = np.concatenate((completedata[0:inicio, -1], completedata[fin:, -1]))
@@ -561,13 +561,14 @@ def rendimiento_validacion_cruzada(clase_clasificador, params, X, y, n=5):
         y_test = completedata[inicio:fin, -1]
         clasificador.entrena(X_train, y_train)
         suma_rend += rendimiento(clasificador, X_test, y_test)
-        inicio = fin
+        inicio = fin+1
         fin += int(N/n)
-    return suma_rend/n
+    return suma_rend/n  # media de los rendimientos
 
+print("Test validación cruzada con los votos")
 Xe_votos = carga_datos.X_votos
 ye_votos = carga_datos.y_votos
-print(rendimiento_validacion_cruzada(NaiveBayes, {"k": 1}, Xe_votos, ye_votos, n=4))
+print("Rendimiento:", rendimiento_validacion_cruzada(NaiveBayes, {"k": 0.1}, Xe_votos, ye_votos, n=4))
 
 # ========================================================
 # EJERCICIO 4: MODELOS LINEALES PARA CLASIFICACIÓN BINARIA
@@ -721,7 +722,6 @@ class RegresionLogisticaMiniBatch():
         self.mapa_clases = mapa_clases
         self.mapa_reverse = mapa_reverse
         self.normalizacion = normalizacion
-        self.norm_params = None
         self.rate = rate
         self.rate_decay = rate_decay
         self.batch_tam = batch_tam
@@ -910,6 +910,40 @@ lr_votos5 = RegresionLogisticaMiniBatch(rate=0.1, rate_decay=True, n_epochs=1000
 # >>> 0.9736842105263158
 # --------------------------------------------------------------------
 
+class RL_OvR():
+
+     def __init__(self, clases, rate=0.1, rate_decay=False, batch_tam=64, n_epochs=200):
+         self.clases = clases
+         self.rate = rate
+         self.rate_decay = rate_decay
+         self.batch_tam = batch_tam
+         self.n_epochs = n_epochs
+         self.pesos = list()
+         self.reg = list()
+         # si pesos está vacía, el clasificador no está entrenado
+
+     def entrena(self, X, y):
+        for i in range(len(self.clases)):
+            self.reg.append(RegresionLogisticaMiniBatch(clases=[0, 1], normalizacion=False, rate=self.rate, rate_decay=self.rate_decay, batch_tam=self.batch_tam, n_epochs=self.n_epochs,pesos_iniciales=None))
+            y_new = np.array([1 if j == self.clases[i] else 0 for j in y])
+            self.reg[i].entrena(X, y_new)
+
+     def clasifica(self, ejemplo):
+         prob = []
+         for i in range(len(self.clases)):
+            prob.append(self.reg[i].clasifica_prob(ejemplo)[1])
+         return self.clases[np.argmax(prob)]
+
+print("Test One vs Rest con los datos iris.")
+
+Xe_iris, Xp_iris, ye_iris, yp_iris = particion_entr_prueba(carga_datos.X_iris, carga_datos.y_iris)
+
+rl_iris = RL_OvR([0, 1, 2], rate=0.001, batch_tam=20, n_epochs=1000)
+
+rl_iris.entrena(Xe_iris, ye_iris)
+
+print("Rendimiento:", rendimiento(rl_iris, Xe_iris, ye_iris), "\n")
+print("-------------------------------------")
 
 # ---------------------------------------------------------
 # 5.2) Clasificación de imágenes de dígitos escritos a mano
