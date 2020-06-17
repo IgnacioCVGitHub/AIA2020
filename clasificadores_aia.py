@@ -822,8 +822,8 @@ rendimiento(lr_cancer, normaliza(Xe_cancer), ye_cancer)
 # Mostrar el proceso realizado en cada caso, y los rendimientos finales obtenidos. 
 
 '''Vamos a procceder a crear para cada conjunto de datos distintos clasificadores
-y probar sus rendimientos. Para ello, usaremos una distribución 80-20 para probar 
-los distintos conjuntos
+y probar sus rendimientos. Para ello, probaremos con la clase de validación cruzada para
+comprobar los rendimientos de los distintos clasificadores
 
 '''
 
@@ -835,24 +835,58 @@ no será necesario normalizar'''
 
 
 
-lr_votos = RegresionLogisticaMiniBatch(rate=0.1, rate_decay=True, n_epochs=1000)
-lr_votos2 = RegresionLogisticaMiniBatch(rate=0.25, rate_decay=True, n_epochs=2500)
-lr_votos3 = RegresionLogisticaMiniBatch(rate=0.1, rate_decay=True, n_epochs=1000, 
-                                        batch_tam=128)
-lr_votos4 = RegresionLogisticaMiniBatch(rate=0.1, rate_decay=False, n_epochs=1000,
-                                       batch_tam=256)
-
-lr_votos5 = RegresionLogisticaMiniBatch(rate=0.1, rate_decay=True, n_epochs=1000)
-
+# lr_votos = RegresionLogisticaMiniBatch(rate=0.1, rate_decay=True, n_epochs=1000)
+# lr_votos2 = RegresionLogisticaMiniBatch(rate=0.25, rate_decay=True, n_epochs=2500)
+# lr_votos3 = RegresionLogisticaMiniBatch(rate=0.1, rate_decay=True, n_epochs=1000, 
+#                                         batch_tam=128)
+# lr_votos4 = RegresionLogisticaMiniBatch(rate=0.1, rate_decay=False, n_epochs=1000,
+#                                        batch_tam=256)
+# lr_votos5 = RegresionLogisticaMiniBatch(rate=0.2, rate_decay=True, n_epochs=1750,batch_tam=128)
 
 
+print("El rendimiento de lr_votos es:",rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,{"rate":0.1,
+        "rate_decay":True,"n_epochs":1000}, Xe_votos, ye_votos))
+print("El rendimiento de lr_votos2 es:",rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
+   {"rate":0.25,"rate_decay":True,"n_epochs":2500}, Xe_votos, ye_votos))
+print("El rendimiento de lr_votos3 es:",rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
+   {"rate":0.1,"rate_decay":True,"n_epochs":1000,"batch_tam":128}, Xe_votos, ye_votos))
+print("El rendimiento de lr_votos4 es:",rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
+   {"rate":0.1,"rate_decay":False,"n_epochs":1000,"batch_tam":256}, Xe_votos, ye_votos))
+print("El rendimiento de lr_votos5 es:",rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
+   {"rate":0.2,"rate_decay":True,"n_epochs":1750,"batch_tam":128}, Xe_votos, ye_votos))
+
+'''Tras unos 10 minutos de espera, hemos obtenido el siguiente volcado de pantalla:
+    El rendimiento de lr_votos es: 0.7793103448275861
+    El rendimiento de lr_votos2 es: 0.7793103448275861
+    El rendimiento de lr_votos3 es: 0.7793103448275861
+    El rendimiento de lr_votos4 es: 0.7816091954022989
+    El rendimiento de lr_votos5 es: 0.7793103448275861
+    
+    Los rendimientos han sido identicos en 4 ocasiones, mejorando un poco con
+    rate":0.1,"rate_decay":False,"n_epochs":1000,"batch_tam":256
+    
+    No contentos con esto, vamos a seguir llevando esto adelante con más parámetros,
+    para estudiar los rendimientos.
+    
+'''
+print("El rendimiento de lr_votos6 es:",rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
+   {"rate":0.3,"rate_decay":True,"n_epochs":3500,"batch_tam":256}, Xe_votos, ye_votos))
+
+print("El rendimiento de lr_votos7 es:",rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
+   {"rate":0.5,"rate_decay":False,"n_epochs":3500,"batch_tam":128}, Xe_votos, ye_votos))
+
+print("El rendimiento de lr_votos8 es:",rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
+   {"rate":0.05,"rate_decay":True,"n_epochs":2000,"batch_tam":32}, Xe_votos, ye_votos))
 
 
+'''
+El rendimiento de lr_votos6 es: 0.7793103448275861
+El rendimiento de lr_votos7 es: 0.7701149425287357
+El rendimiento de lr_votos8 es: 0.7793103448275861
 
-
-
-
-
+De nuevo, nos vemos estancados en ese 77.93% de rendimiento, llegando a empeorar incluso
+para el caso de lr_votos7.
+'''
 
 # =====================================
 # EJERCICIO 5: CLASIFICACIÓN MULTICLASE
