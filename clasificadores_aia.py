@@ -560,7 +560,10 @@ def rendimiento_validacion_cruzada(clase_clasificador, params, X, y, n=5):
         X_test = completedata[inicio:fin, :-1]
         y_test = completedata[inicio:fin, -1]
         clasificador.entrena(X_train, y_train)
-        suma_rend += rendimiento(clasificador, X_test, y_test)
+        if clasificador.normalizacion:
+            suma_rend += rendimiento(clasificador, normaliza(X_test), y_test)
+        else:
+            suma_rend += rendimiento(clasificador, X_test, y_test)
         inicio = fin+1
         fin += int(N/n)
     return suma_rend/n  # media de los rendimientos
@@ -888,6 +891,47 @@ De nuevo, nos vemos estancados en ese 77.93% de rendimiento, llegando a empeorar
 para el caso de lr_votos7.
 '''
 
+#CANCER DE MAMA
+
+'''Para este conjunto de datos, es conveniente normalizar los datos, ya que son muy
+diversos. Una vez más, usaremos los mismos parámetros que con los votos de congresistas:'''
+
+X_cancer=carga_datos.X_cancer
+y_cancer=carga_datos.y_cancer
+
+print("El rendimiento de lr_cancer es:",rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,{"rate":0.1,
+        "rate_decay":True,"normalizacion":True,"n_epochs":1000}, X_cancer, y_cancer))
+print("El rendimiento de lr_cancer2 es:",rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
+   {"rate":0.25,"normalizacion":True,"rate_decay":True,"n_epochs":2500}, X_cancer, y_cancer))
+print("El rendimiento de lr_cancer3 es:",rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
+   {"rate":0.1,"normalizacion":True,"rate_decay":True,"n_epochs":1000,"batch_tam":128}, X_cancer, y_cancer))
+print("El rendimiento de lr_cancer4 es:",rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
+   {"rate":0.1,"normalizacion":True,"rate_decay":False,"n_epochs":1000,"batch_tam":256}, X_cancer, y_cancer))
+print("El rendimiento de lr_cancer5 es:",rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
+   {"rate":0.2,"normalizacion":True,"rate_decay":True,"n_epochs":1750,"batch_tam":128}, X_cancer, y_cancer))
+print("El rendimiento de lr_cancer6 es:",rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
+   {"rate":0.3,"normalizacion":True,"rate_decay":True,"n_epochs":3500,"batch_tam":256}, X_cancer, y_cancer))
+print("El rendimiento de lr_cancer7 es:",rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
+   {"rate":0.5,"normalizacion":True,"rate_decay":False,"n_epochs":3500,"batch_tam":128}, X_cancer, y_cancer))
+print("El rendimiento de lr_cancer8 es:",rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
+   {"rate":0.05,"normalizacion":True,"rate_decay":True,"n_epochs":2000,"batch_tam":32}, X_cancer, y_cancer))
+
+'''
+Tras unos fantásticos 15 minutos de espera, obtenemos los siguientes resultados para los
+clasificadores que hemos definido previamente:
+El rendimiento de lr_cancer es: 0.9323798988621996
+El rendimiento de lr_cancer2 es: 0.9305941845764855
+El rendimiento de lr_cancer3 es: 0.9323798988621996
+El rendimiento de lr_cancer4 es: 0.9037926675094816
+El rendimiento de lr_cancer5 es: 0.9323798988621996
+El rendimiento de lr_cancer6 es: 0.9252370417193425
+El rendimiento de lr_cancer7 es: 0.9002212389380532
+El rendimiento de lr_cancer8 es: 0.9341814159292035
+
+De media, ha habido una mejoría sustanciosa con respecto a los votos de los congresistas,
+de más de un 15% en algunos casos. Los rendimientos son más dispares, pero aun así
+excelentes, siendo el mejor resultado el clasificador 8, por unas milésimas     
+'''
 # =====================================
 # EJERCICIO 5: CLASIFICACIÓN MULTICLASE
 # =====================================
