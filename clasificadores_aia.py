@@ -99,7 +99,6 @@ import numpy as np
 import random
 import carga_datos
 import operator
-import statistics
 
 
 
@@ -720,10 +719,9 @@ class RegresionLogisticaMiniBatch():
     def __init__(self, clases=[0, 1], normalizacion=False,
                 rate=0.1, rate_decay=False, batch_tam=64, n_epochs=200,
                  pesos_iniciales=None):
-        mapa_clases = {clases[0]: 0, clases[1]: 1}
+        
         mapa_reverse = {0: clases[0], 1: clases[1]}
-        self.clases = mapa_clases.values()
-        self.mapa_clases = mapa_clases
+        self.clases = clases
         self.mapa_reverse = mapa_reverse
         self.normalizacion = normalizacion
         self.rate = rate
@@ -735,7 +733,7 @@ class RegresionLogisticaMiniBatch():
         # si pesos está vacía, el clasificador no está entrenado
         
     def entrena(self, X, y):
-        mapa = self.mapa_clases
+        
         pesos = []
         if self.pesos_iniciales is not None:  # tomamos los pesos directamente de la clase
             pesos = list(self.pesos_iniciales)
@@ -762,7 +760,7 @@ class RegresionLogisticaMiniBatch():
                 # para cada subconjunto actualizamos
                 pesos_previos = [0.0 for _ in block[0][:-1]]
                 for array in block:
-                    sum_a = mapa.get(array[-1])-sigmoide(np.dot(pesos, array[:-1]))
+                    sum_a = array[-1]-sigmoide(np.dot(pesos, array[:-1]))
                     sum_t = np.dot(sum_a, array[:-1])
                     pesos_previos = suma_paralelo(pesos_previos, sum_t)
                 # una vez hecho todo el sumatorio de los elementos del subgrupo,
@@ -781,12 +779,9 @@ class RegresionLogisticaMiniBatch():
         else:
             result = sigmoide(np.dot(self.pesos, ejemplo))
             probs = dict()
-            mapa_clases = self.mapa_clases
-            for clase in mapa_clases:
-                if mapa_clases.get(clase) == 1:
-                    probs[clase] = result
-                else:
-                    probs[clase] = 1-result
+            reverse= self.mapa_reverse
+            probs[reverse.get(0)]=1-result
+            probs[reverse.get(1)]=result
             return probs
 
     def clasifica(self, ejemplo):
@@ -803,6 +798,7 @@ lr_cancer = RegresionLogisticaMiniBatch(rate=0.1, rate_decay=True, normalizacion
 lr_cancer.entrena(Xe_cancer, ye_cancer)
 
 rendimiento(lr_cancer, normaliza(Xe_cancer), ye_cancer)
+
 
 
 
@@ -933,6 +929,10 @@ De media, ha habido una mejoría sustanciosa con respecto a los votos de los con
 de más de un 15% en algunos casos. Los rendimientos son más dispares, pero aun así
 excelentes, siendo el mejor resultado el clasificador 8, por unas milésimas     
 '''
+
+#Clasificación de IMDB
+X_imdb=carga_datos.X_train_imdb
+y_imdb=carga_datos.y_train_imdb
 # =====================================
 # EJERCICIO 5: CLASIFICACIÓN MULTICLASE
 # =====================================
