@@ -302,6 +302,7 @@ class NaiveBayes():
         :param k: constante de suavizado
         """
         self.k = k
+        self.normalizacion = False
 
     def entrena(self, X, y):
         clases, frec_clases = np.unique(y, return_counts=True)
@@ -847,16 +848,16 @@ no será necesario normalizar'''
 # lr_votos5 = RegresionLogisticaMiniBatch(rate=0.2, rate_decay=True, n_epochs=1750,batch_tam=128)
 
 
-print("El rendimiento de lr_votos es:",rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,{"rate":0.1,
-        "rate_decay":True,"n_epochs":1000}, Xe_votos, ye_votos))
-print("El rendimiento de lr_votos2 es:",rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
-   {"rate":0.25,"rate_decay":True,"n_epochs":2500}, Xe_votos, ye_votos))
-print("El rendimiento de lr_votos3 es:",rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
-   {"rate":0.1,"rate_decay":True,"n_epochs":1000,"batch_tam":128}, Xe_votos, ye_votos))
-print("El rendimiento de lr_votos4 es:",rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
-   {"rate":0.1,"rate_decay":False,"n_epochs":1000,"batch_tam":256}, Xe_votos, ye_votos))
-print("El rendimiento de lr_votos5 es:",rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
-   {"rate":0.2,"rate_decay":True,"n_epochs":1750,"batch_tam":128}, Xe_votos, ye_votos))
+print("El rendimiento de lr_votos es:", rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch, {"rate": 0.1,
+        "rate_decay": True, "n_epochs": 1000}, Xe_votos, ye_votos))
+print("El rendimiento de lr_votos2 es:", rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
+   {"rate": 0.25, "rate_decay":True,"n_epochs": 2500}, Xe_votos, ye_votos))
+print("El rendimiento de lr_votos3 es:", rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
+   {"rate": 0.1, "rate_decay":True,"n_epochs": 1000,"batch_tam": 128}, Xe_votos, ye_votos))
+print("El rendimiento de lr_votos4 es:", rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
+   {"rate": 0.1, "rate_decay":False,"n_epochs": 1000, "batch_tam": 256}, Xe_votos, ye_votos))
+print("El rendimiento de lr_votos5 es:", rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
+   {"rate": 0.2, "rate_decay": True, "n_epochs": 1750, "batch_tam": 128}, Xe_votos, ye_votos))
 
 '''Tras unos 10 minutos de espera, hemos obtenido el siguiente volcado de pantalla:
     El rendimiento de lr_votos es: 0.7793103448275861
@@ -899,22 +900,22 @@ diversos. Una vez más, usaremos los mismos parámetros que con los votos de con
 X_cancer=carga_datos.X_cancer
 y_cancer=carga_datos.y_cancer
 
-print("El rendimiento de lr_cancer es:",rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,{"rate":0.1,
-        "rate_decay":True,"normalizacion":True,"n_epochs":1000}, X_cancer, y_cancer))
-print("El rendimiento de lr_cancer2 es:",rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
-   {"rate":0.25,"normalizacion":True,"rate_decay":True,"n_epochs":2500}, X_cancer, y_cancer))
-print("El rendimiento de lr_cancer3 es:",rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
-   {"rate":0.1,"normalizacion":True,"rate_decay":True,"n_epochs":1000,"batch_tam":128}, X_cancer, y_cancer))
-print("El rendimiento de lr_cancer4 es:",rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
-   {"rate":0.1,"normalizacion":True,"rate_decay":False,"n_epochs":1000,"batch_tam":256}, X_cancer, y_cancer))
-print("El rendimiento de lr_cancer5 es:",rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
-   {"rate":0.2,"normalizacion":True,"rate_decay":True,"n_epochs":1750,"batch_tam":128}, X_cancer, y_cancer))
-print("El rendimiento de lr_cancer6 es:",rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
-   {"rate":0.3,"normalizacion":True,"rate_decay":True,"n_epochs":3500,"batch_tam":256}, X_cancer, y_cancer))
-print("El rendimiento de lr_cancer7 es:",rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
-   {"rate":0.5,"normalizacion":True,"rate_decay":False,"n_epochs":3500,"batch_tam":128}, X_cancer, y_cancer))
-print("El rendimiento de lr_cancer8 es:",rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
-   {"rate":0.05,"normalizacion":True,"rate_decay":True,"n_epochs":2000,"batch_tam":32}, X_cancer, y_cancer))
+print("El rendimiento de lr_cancer es:",  rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch, {"rate": 0.1,
+        "rate_decay": True, "normalizacion": True,"n_epochs": 1000}, X_cancer, y_cancer))
+print("El rendimiento de lr_cancer2 es:", rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
+   {"rate": 0.25,  "normalizacion": True, "rate_decay": True, "n_epochs": 2500}, X_cancer, y_cancer))
+print("El rendimiento de lr_cancer3 es:",  rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
+   {"rate": 0.1, "normalizacion": True, "rate_decay": True,"n_epochs": 1000, "batch_tam": 128}, X_cancer, y_cancer))
+print("El rendimiento de lr_cancer4 es:",  rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
+   {"rate": 0.1,  "normalizacion": True, "rate_decay": False,"n_epochs": 1000,  "batch_tam": 256}, X_cancer, y_cancer))
+print("El rendimiento de lr_cancer5 es:", rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
+   {"rate": 0.2, "normalizacion": True, "rate_decay": True, "n_epochs":  1750, "batch_tam": 128}, X_cancer, y_cancer))
+print("El rendimiento de lr_cancer6 es:", rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
+   {"rate": 0.3, "normalizacion": True, "rate_decay": True, "n_epochs": 3500,  "batch_tam": 256}, X_cancer, y_cancer))
+print("El rendimiento de lr_cancer7 es:", rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
+   {"rate": 0.5, "normalizacion": True,  "rate_decay": False, "n_epochs": 3500, "batch_tam":  128}, X_cancer, y_cancer))
+print("El rendimiento de lr_cancer8 es:", rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
+   {"rate": 0.05, "normalizacion": True,  "rate_decay": True,"n_epochs": 2000, "batch_tam": 32}, X_cancer, y_cancer))
 
 '''
 Tras unos fantásticos 15 minutos de espera, obtenemos los siguientes resultados para los
@@ -1052,3 +1053,46 @@ print("-------------------------------------")
 # rate_decay para tratar de obtener un rendimiento aceptable (por encima del
 # 75% de aciertos sobre test). 
 
+def leer_digitos(fichero):
+    """
+    Lee un fichero que nos da imagenes de 28x29 pixeles representando digitos.
+    Devuelve un array numpy que contenga la representacion de los digitos de este fichero.
+    """
+    f = open(fichero)
+    count = 0
+    datos = []
+    imagen = []
+    for linea in f:
+        transform_linea = [0 if c == " " else 1 for c in linea]
+        imagen.append(transform_linea)
+        count += 1
+        if count == 28:
+            count = 0
+            datos.append(imagen)
+            imagen = []
+    f.close()
+    return np.array(datos)
+
+
+def leer_label(fichero):
+    f = open(fichero)
+    labels = []
+    for l in f:
+        labels.append(int(l))
+    f.close()
+    return np.array(labels)
+
+
+Xtrain_digitos = leer_digitos("datos/trainingimages").reshape(5000, 28*29)
+ytrain_digitos = leer_label("datos/traininglabels")
+
+Xtest_digitos = leer_digitos("datos/testimages").reshape(1000, 28*29)
+ytest_digitos = leer_label("datos/testlabels")
+
+Xval_digitos = leer_digitos("datos/validationimages").reshape(1000, 28*29)
+yval_digitos = leer_label("datos/validationlabels")
+
+reg_digitos = RL_OvR(np.arange(10), rate=0.001, batch_tam=20, n_epochs=1000)  # largo en tiempo
+reg_digitos.entrena(Xtrain_digitos, ytrain_digitos)
+
+rendimiento(reg_digitos, Xtest_digitos, ytest_digitos)
