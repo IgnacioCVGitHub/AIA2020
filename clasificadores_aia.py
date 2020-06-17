@@ -931,8 +931,31 @@ excelentes, siendo el mejor resultado el clasificador 8, por unas milésimas
 '''
 
 #Clasificación de IMDB
-X_imdb=carga_datos.X_train_imdb
-y_imdb=carga_datos.y_train_imdb
+X_imdb=np.concatenate((carga_datos.X_train_imdb,carga_datos.X_test_imdb))
+y_imdb=np.concatenate((carga_datos.y_train_imdb,carga_datos.y_test_imdb))
+
+
+'''Una vez que carguemos los datos, vamos a usar la misma configuración 
+que hemos usado para los otros casos y estudiaremos cómo de efectivo ha sido.
+Tras mirar brevemente el conjunto de datos, las características tienen valores 
+de 0 y 1, por lo que no va a tener mucho sentido aplicar normalización. 
+'''
+print("El rendimiento de lr_imdb es:",  rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch, {"rate": 0.1,
+        "rate_decay": True, "normalizacion": True,"n_epochs": 1000}, X_imdb, y_imdb))
+print("El rendimiento de lr_imdb2 es:", rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
+   {"rate": 0.25,  "normalizacion": True, "rate_decay": True, "n_epochs": 2500}, X_imdb, y_imdb))
+print("El rendimiento de lr_imdb3 es:",  rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
+   {"rate": 0.1, "normalizacion": True, "rate_decay": True,"n_epochs": 1000, "batch_tam": 128}, X_imdb, y_imdb))
+print("El rendimiento de lr_imdb4 es:",  rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
+   {"rate": 0.1,  "normalizacion": True, "rate_decay": False,"n_epochs": 1000,  "batch_tam": 256}, X_imdb, y_imdb))
+print("El rendimiento de lr_imdb5 es:", rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
+   {"rate": 0.2, "normalizacion": True, "rate_decay": True, "n_epochs":  1750, "batch_tam": 128}, X_imdb, y_imdb))
+print("El rendimiento de lr_imdb6 es:", rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
+   {"rate": 0.3, "normalizacion": True, "rate_decay": True, "n_epochs": 3500,  "batch_tam": 256}, X_imdb, y_imdb))
+print("El rendimiento de lr_imdb7 es:", rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
+   {"rate": 0.5, "normalizacion": True,  "rate_decay": False, "n_epochs": 3500, "batch_tam":  128}, X_imdb, y_imdb))
+print("El rendimiento de lr_imdb8 es:", rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
+   {"rate": 0.05, "normalizacion": True,  "rate_decay": True,"n_epochs": 2000, "batch_tam": 32}, X_imdb, y_imdb))
 # =====================================
 # EJERCICIO 5: CLASIFICACIÓN MULTICLASE
 # =====================================
