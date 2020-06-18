@@ -939,6 +939,11 @@ y_imdb=np.concatenate((carga_datos.y_train_imdb,carga_datos.y_test_imdb))
 que hemos usado para los otros casos y estudiaremos cómo de efectivo ha sido.
 Tras mirar brevemente el conjunto de datos, las características tienen valores 
 de 0 y 1, por lo que no va a tener mucho sentido aplicar normalización. 
+
+Cabe destacar que vamos a usar TODO el conjunto de datos que se nos muestra
+para algún clasificador,aunque sea un acercamiento masoquista. Probaremos también a crear clasificadores
+independientes y probar con los conjuntos separados, agilizando el proceso un poco
+con suerte
 '''
 print("El rendimiento de lr_imdb es:",  rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch, {"rate": 0.1,
         "rate_decay": True, "normalizacion": True,"n_epochs": 1000}, X_imdb, y_imdb))
@@ -956,6 +961,11 @@ print("El rendimiento de lr_imdb7 es:", rendimiento_validacion_cruzada(Regresion
    {"rate": 0.5, "normalizacion": True,  "rate_decay": False, "n_epochs": 3500, "batch_tam":  128}, X_imdb, y_imdb))
 print("El rendimiento de lr_imdb8 es:", rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
    {"rate": 0.05, "normalizacion": True,  "rate_decay": True,"n_epochs": 2000, "batch_tam": 32}, X_imdb, y_imdb))
+
+'''
+Tras esperar pacientemente por nuestros resultados, obtenemos los siguientes rendimientos:
+
+'''
 # =====================================
 # EJERCICIO 5: CLASIFICACIÓN MULTICLASE
 # =====================================
