@@ -991,6 +991,13 @@ El rendimiento de lr_imdb3 es: 0.765
 El rendimiento de lr_imdb4 es: 0.7625
 El rendimiento de lr_imdb5 es: 0.76
 El rendimiento de lr_imdb6 es: 0.77
+
+Vemos que los resultados son ligeramente mejores, en torno al 75%-77%, siendo
+el mejor resultado aquel con los parámetros de "rate": 0.05, 
+"normalizacion": True,"rate_decay": True,"n_epochs": 2000, "batch_tam": 32.
+
+Aun así, estimamos que los datos no son los más adecuados para estudiar con
+regresión logística.
 '''
 
 # =====================================
