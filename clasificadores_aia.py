@@ -869,14 +869,14 @@ print("El rendimiento de lr_votos5 es:", rendimiento_validacion_cruzada(Regresio
     para estudiar los rendimientos.
     
 '''
-print("El rendimiento de lr_votos6 es:",rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
-   {"rate":0.3,"rate_decay":True,"n_epochs":3500,"batch_tam":256}, Xe_votos, ye_votos))
+print("El rendimiento de lr_votos6 es:", rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
+   {"rate": 0.3, "rate_decay": True, "n_epochs": 3500, "batch_tam": 256}, Xe_votos, ye_votos))
 
-print("El rendimiento de lr_votos7 es:",rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
-   {"rate":0.5,"rate_decay":False,"n_epochs":3500,"batch_tam":128}, Xe_votos, ye_votos))
+print("El rendimiento de lr_votos7 es:", rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
+   {"rate": 0.5, "rate_decay": False, "n_epochs": 3500, "batch_tam": 128}, Xe_votos, ye_votos))
 
 print("El rendimiento de lr_votos8 es:",rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
-   {"rate":0.05,"rate_decay":True,"n_epochs":2000,"batch_tam":32}, Xe_votos, ye_votos))
+   {"rate": 0.05, "rate_decay": True, "n_epochs": 2000, "batch_tam": 32}, Xe_votos, ye_votos))
 
 
 '''
@@ -893,8 +893,8 @@ para el caso de lr_votos7.
 '''Para este conjunto de datos, es conveniente normalizar los datos, ya que son muy
 diversos. Una vez más, usaremos los mismos parámetros que con los votos de congresistas:'''
 
-X_cancer=carga_datos.X_cancer
-y_cancer=carga_datos.y_cancer
+X_cancer = carga_datos.X_cancer
+y_cancer = carga_datos.y_cancer
 
 print("El rendimiento de lr_cancer es:",  rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch, {"rate": 0.1,
         "rate_decay": True, "normalizacion": True,"n_epochs": 1000}, X_cancer, y_cancer))
@@ -930,9 +930,9 @@ de más de un 15% en algunos casos. Los rendimientos son más dispares, pero aun
 excelentes, siendo el mejor resultado el clasificador 8, por unas milésimas     
 '''
 
-#Clasificación de IMDB
-X_imdb=np.concatenate((carga_datos.X_train_imdb,carga_datos.X_test_imdb))
-y_imdb=np.concatenate((carga_datos.y_train_imdb,carga_datos.y_test_imdb))
+# Clasificación de IMDB
+X_imdb = np.concatenate((carga_datos.X_train_imdb, carga_datos.X_test_imdb))
+y_imdb = np.concatenate((carga_datos.y_train_imdb, carga_datos.y_test_imdb))
 
 
 '''Una vez que carguemos los datos, vamos a usar la misma configuración 
@@ -1116,16 +1116,19 @@ def leer_label(fichero):
     return np.array(labels)
 
 
-Xtrain_digitos = leer_digitos("datos/trainingimages").reshape(5000, 28*29)
-ytrain_digitos = leer_label("datos/traininglabels")
+Xtrain_digitos = leer_digitos("datos/trainingimages").reshape(5000, 28*29)[0:500]
+ytrain_digitos = leer_label("datos/traininglabels")[0:500]
 
-Xtest_digitos = leer_digitos("datos/testimages").reshape(1000, 28*29)
-ytest_digitos = leer_label("datos/testlabels")
+Xtest_digitos = leer_digitos("datos/testimages").reshape(1000, 28*29)[0:200]
+ytest_digitos = leer_label("datos/testlabels")[0:200]
 
 Xval_digitos = leer_digitos("datos/validationimages").reshape(1000, 28*29)
 yval_digitos = leer_label("datos/validationlabels")
 
-reg_digitos = RL_OvR(np.arange(10), rate=0.001, batch_tam=20, n_epochs=1000)  # largo en tiempo
-reg_digitos.entrena(Xtrain_digitos, ytrain_digitos)
+reg_digitos = RL_OvR(np.arange(10), rate=0.001, batch_tam=20, n_epochs=1000)
+reg_digitos.entrena(Xtrain_digitos, ytrain_digitos)  # largo en tiempo = mas o menos 30 minutos para 500 datos
 
-rendimiento(reg_digitos, Xtest_digitos, ytest_digitos)
+print("Rendimento sobre los datos de entranamiento", rendimiento(reg_digitos, Xtrain_digitos, ytrain_digitos))
+# nos da 1 de rendimiento para los datos de entranamiento  -> sobreajuste
+print("Rendimiento sobre los datos de test", rendimiento(reg_digitos, Xtest_digitos, ytest_digitos))
+# 0.79 de rendimiento para los datos de test
