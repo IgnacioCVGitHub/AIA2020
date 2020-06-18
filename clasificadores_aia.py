@@ -978,6 +978,17 @@ lr_imdb4.entrena(xe_imdb,ye_imdb)
 lr_imdb5.entrena(xe_imdb,ye_imdb)
 lr_imdb6.entrena(xe_imdb,ye_imdb)
 
+print("El rendimiento de lr_imdb2 es:",rendimiento(lr_imdb2,xt_imdb,yt_imdb))
+print("El rendimiento de lr_imdb3 es:",rendimiento(lr_imdb3,xt_imdb,yt_imdb))
+print("El rendimiento de lr_imdb4 es:",rendimiento(lr_imdb4,xt_imdb,yt_imdb))
+print("El rendimiento de lr_imdb5 es:",rendimiento(lr_imdb5,xt_imdb,yt_imdb))
+print("El rendimiento de lr_imdb6 es:",rendimiento(lr_imdb6,xt_imdb,yt_imdb))
+
+
+'''Resultados:
+El rendimiento de lr_imdb2 es: 0.7525
+
+'''
 
 # =====================================
 # EJERCICIO 5: CLASIFICACIÓN MULTICLASE
