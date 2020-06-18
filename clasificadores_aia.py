@@ -987,7 +987,10 @@ print("El rendimiento de lr_imdb6 es:",rendimiento(lr_imdb6,xt_imdb,yt_imdb))
 
 '''Resultados:
 El rendimiento de lr_imdb2 es: 0.7525
-
+El rendimiento de lr_imdb3 es: 0.765
+El rendimiento de lr_imdb4 es: 0.7625
+El rendimiento de lr_imdb5 es: 0.76
+El rendimiento de lr_imdb6 es: 0.77
 '''
 
 # =====================================
