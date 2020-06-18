@@ -969,8 +969,14 @@ yt_imdb=carga_datos.y_test_imdb
 lr_imdb2=RegresionLogisticaMiniBatch(**{"rate": 0.25,  "normalizacion": True, "rate_decay": True, "n_epochs": 2500})
 lr_imdb3=RegresionLogisticaMiniBatch(**{"rate": 0.1, "normalizacion": True, "rate_decay": True,"n_epochs": 1000, "batch_tam": 128})
 lr_imdb4=RegresionLogisticaMiniBatch(**{"rate": 0.2, "normalizacion": True, "rate_decay": True, "n_epochs":  1750, "batch_tam": 128})
-lr_imdb5=RegresionLogisticaMiniBatch(**{"rate": 0.5, "normalizacion": True,  "rate_decay": False, "n_epochs": 3500, "batch_tam":  128}, X_imdb, y_imdb)))
+lr_imdb5=RegresionLogisticaMiniBatch(**{"rate": 0.5, "normalizacion": True,  "rate_decay": False, "n_epochs": 3500, "batch_tam":  128})
 lr_imdb6=RegresionLogisticaMiniBatch(**{"rate": 0.05, "normalizacion": True,  "rate_decay": True,"n_epochs": 2000, "batch_tam": 32})
+
+lr_imdb2.entrena(xe_imdb,ye_imdb)
+lr_imdb3.entrena(xe_imdb,ye_imdb)
+lr_imdb4.entrena(xe_imdb,ye_imdb)
+lr_imdb5.entrena(xe_imdb,ye_imdb)
+lr_imdb6.entrena(xe_imdb,ye_imdb)
 
 
 # =====================================
