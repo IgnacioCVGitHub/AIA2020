@@ -457,28 +457,68 @@ for k in K:
 print("------------\n")
 # - Críticas de películas en IMDB
 """
-print("CRITICAS DE PELICULAS EN IMDB \n")
-
-t = 0.3
-print("Separacion de los datos en ", 100-t*100, "% de entranamiento y ", 100*t, "% de prueba.\n")
-X_train_imdb, X_test_imdb, y_train_imdb, y_test_imdb = carga_datos.X_train_imdb, carga_datos.X_test_imdb, carga_datos.y_train_imdb, carga_datos.y_test_imdb
-
-K = [0.5, 1, 5, 10, 100, 200, 300]
-
-for k in K:
-    print("k=", k)
-    nb_imdb = NaiveBayes(k=k)
-    nb_imdb.entrena(X_train_imdb, y_train_imdb)
-    print("Rendimiento sobre conjunto de entrenamiento", rendimiento(nb_imdb, X_train_imdb, y_train_imdb))
-    print("Rendimiento sobre conjunto de test", rendimiento(nb_imdb, X_test_imdb, y_test_imdb), "\n")
+En esta sección vamos a estudiar como se comportan distintos clasificadores
+de Naive Bayes con el conjunto de datos de imdb, el cual ya viene dividido
+en entrenamiento y prueba, lo cual nos facilita un poco el trabajo.
 
 """
 
 print("----------------------------------------------------------------")
 
+#carga de datos por separado
+xe_imdb=carga_datos.X_train_imdb
+ye_imdb=carga_datos.y_train_imdb
+xt_imdb=carga_datos.X_test_imdb
+yt_imdb=carga_datos.y_test_imdb
+
+print("CRITICAS DE PELICULAS EN IMDB con Naive Bayes\n")
+
+Kimdb = [0.5, 1, 5, 25, 100,250,300]
+
+for k in Kimdb:
+    print("k=", k)
+    nb_imdb = NaiveBayes(k=k)
+    nb_imdb.entrena(xe_imdb, ye_imdb)
+    print("Rendimiento sobre conjunto de entrenamiento", rendimiento(nb_imdb, xe_imdb, ye_imdb))
+    print("Rendimiento sobre conjunto de test", rendimiento(nb_imdb, xt_imdb, yt_imdb), "\n")
 
 
+'''
+Para los valores de la lista Kimdb hemos creado un clasificador NaiveBayes
+y hemos obtenido los siguientes resultados:
 
+k= 0.5
+Rendimiento sobre conjunto de entrenamiento 0.8445
+Rendimiento sobre conjunto de test 0.785 
+
+k= 1
+Rendimiento sobre conjunto de entrenamiento 0.8455
+Rendimiento sobre conjunto de test 0.785 
+
+k= 5
+Rendimiento sobre conjunto de entrenamiento 0.842
+Rendimiento sobre conjunto de test 0.7825 
+
+k= 25
+Rendimiento sobre conjunto de entrenamiento 0.837
+Rendimiento sobre conjunto de test 0.795 
+
+k= 100
+Rendimiento sobre conjunto de entrenamiento 0.812
+Rendimiento sobre conjunto de test 0.7775 
+
+k= 250
+Rendimiento sobre conjunto de entrenamiento 0.762
+Rendimiento sobre conjunto de test 0.7475 
+
+k= 300
+Rendimiento sobre conjunto de entrenamiento 0.742
+Rendimiento sobre conjunto de test 0.7425
+
+En lineas generales, los rendimientos han sido bastante homogéneos,
+todos entre el 74% y el 80% para los conjuntos de test.
+El mejor resultado en tests lo hemos obtenido para K=25
+'''
 # =================================================
 # EJERCICIO 3: IMPLEMENTACIÓN DE VALIDACIÓN CRUZADA
 # =================================================
