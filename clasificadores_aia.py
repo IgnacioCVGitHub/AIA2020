@@ -941,31 +941,38 @@ Tras mirar brevemente el conjunto de datos, las características tienen valores
 de 0 y 1, por lo que no va a tener mucho sentido aplicar normalización. 
 
 Cabe destacar que vamos a usar TODO el conjunto de datos que se nos muestra
-para algún clasificador,aunque sea un acercamiento masoquista. Probaremos también a crear clasificadores
+para el primer clasificador,aunque sea un acercamiento masoquista. Probaremos también a crear clasificadores
 independientes y probar con los conjuntos separados, agilizando el proceso un poco
 con suerte
 '''
 print("El rendimiento de lr_imdb es:",  rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch, {"rate": 0.1,
         "rate_decay": True, "normalizacion": True,"n_epochs": 1000}, X_imdb, y_imdb))
-print("El rendimiento de lr_imdb2 es:", rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
-   {"rate": 0.25,  "normalizacion": True, "rate_decay": True, "n_epochs": 2500}, X_imdb, y_imdb))
-print("El rendimiento de lr_imdb3 es:",  rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
-   {"rate": 0.1, "normalizacion": True, "rate_decay": True,"n_epochs": 1000, "batch_tam": 128}, X_imdb, y_imdb))
-print("El rendimiento de lr_imdb4 es:",  rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
-   {"rate": 0.1,  "normalizacion": True, "rate_decay": False,"n_epochs": 1000,  "batch_tam": 256}, X_imdb, y_imdb))
-print("El rendimiento de lr_imdb5 es:", rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
-   {"rate": 0.2, "normalizacion": True, "rate_decay": True, "n_epochs":  1750, "batch_tam": 128}, X_imdb, y_imdb))
-print("El rendimiento de lr_imdb6 es:", rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
-   {"rate": 0.3, "normalizacion": True, "rate_decay": True, "n_epochs": 3500,  "batch_tam": 256}, X_imdb, y_imdb))
-print("El rendimiento de lr_imdb7 es:", rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
-   {"rate": 0.5, "normalizacion": True,  "rate_decay": False, "n_epochs": 3500, "batch_tam":  128}, X_imdb, y_imdb))
-print("El rendimiento de lr_imdb8 es:", rendimiento_validacion_cruzada(RegresionLogisticaMiniBatch,
-   {"rate": 0.05, "normalizacion": True,  "rate_decay": True,"n_epochs": 2000, "batch_tam": 32}, X_imdb, y_imdb))
+
 
 '''
-Tras esperar pacientemente por nuestros resultados, obtenemos los siguientes rendimientos:
+Tras esperar pacientemente una hora y media por nuestro resultados, 
+obtenemos el siguiente rendimiento:
+El rendimiento de lr_imdb es: 0.7295511482254697
 
+El rendimiento roza el 73%, en la linea de lo que sucedía con los votos de
+los congresistas.
+Evidentemente para el resto de casos no vamos a malgastar otra hora y media de
+nuestro tiempo de cómputo, así que vamos a cambiar el enfoque al método de 
+hold out que se nos da con el conjunto de imdb
 '''
+#carga de datos por separado
+xe_imdb=carga_datos.X_train_imdb
+ye_imdb=carga_datos.y_train_imdb
+xt_imdb=carga_datos.X_test_imdb
+yt_imdb=carga_datos.y_test_imdb
+#creación de los clasificadores
+lr_imdb2=RegresionLogisticaMiniBatch(**{"rate": 0.25,  "normalizacion": True, "rate_decay": True, "n_epochs": 2500})
+lr_imdb3=RegresionLogisticaMiniBatch(**{"rate": 0.1, "normalizacion": True, "rate_decay": True,"n_epochs": 1000, "batch_tam": 128})
+lr_imdb4=RegresionLogisticaMiniBatch(**{"rate": 0.2, "normalizacion": True, "rate_decay": True, "n_epochs":  1750, "batch_tam": 128})
+lr_imdb5=RegresionLogisticaMiniBatch(**{"rate": 0.5, "normalizacion": True,  "rate_decay": False, "n_epochs": 3500, "batch_tam":  128}, X_imdb, y_imdb)))
+lr_imdb6=RegresionLogisticaMiniBatch(**{"rate": 0.05, "normalizacion": True,  "rate_decay": True,"n_epochs": 2000, "batch_tam": 32})
+
+
 # =====================================
 # EJERCICIO 5: CLASIFICACIÓN MULTICLASE
 # =====================================
