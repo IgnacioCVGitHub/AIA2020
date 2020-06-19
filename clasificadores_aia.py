@@ -302,6 +302,7 @@ class NaiveBayes():
         """
         self.k = k
         self.normalizacion = False
+        self.entrenado = False
 
     def entrena(self, X, y):
         clases, frec_clases = np.unique(y, return_counts=True)
@@ -323,11 +324,14 @@ class NaiveBayes():
                     else:
                         count_a_en_c = count_tipo_en_c[np.where(tipo_en_c == tipo)]
                     self.cond[(a, clases[c], tipo)] = (count_a_en_c + self.k) / (frec_clases[c] + self.k * len(tipo_a))
+        self.entrenado = True
 
     def clasifica_prob(self, ejemplo):
         """
         Devuelve las log-probabilidades de clase de un ejemplo
         """
+        if not self.entrenado:
+            raise ErrorClasificador("Clasificador no entrenado")
         proba = {c: (self.priori[c]) for c in self.priori.keys()}
         for c in self.priori.keys():
             num_a = 0
@@ -340,24 +344,29 @@ class NaiveBayes():
             proba[c] = proba[c] / total  # normalizar
         return proba
 
+
     def clasifica(self, ejemplo):
         """
         Devuelve la clase en la que es el ejmplo dado en argumento.
         """
+        if not self.entrenado:
+            raise ErrorClasificador("Clasificador no entrenado")
         proba_ej = self.clasifica_prob(ejemplo)
         clasificacion = max(proba_ej.items(), key=operator.itemgetter(1))[0]  # equivalente a un argmax en un diccionario
         return clasificacion
 
 
+print("Test Naive Bayes con los datos tenis.")
 X_tenis = carga_datos.X_tenis
 y_tenis = carga_datos.y_tenis
 
 nb_tenis = NaiveBayes(k=0.5)
 nb_tenis.entrena(X_tenis, y_tenis)
 ej_tenis = np.array(['Soleado', 'Baja', 'Alta', 'Fuerte'])
+print("Ejemplo a clasificar :", ej_tenis)
 print(nb_tenis.clasifica_prob(ej_tenis))
 # {'no': 0.7564841498559081, 'si': 0.24351585014409202}
-print(nb_tenis.clasifica(ej_tenis))
+print("Clasificación:", nb_tenis.clasifica(ej_tenis))
 # 'no'
 
 
@@ -393,8 +402,8 @@ def rendimiento(clasificador, X, y):
     return len(np.where(pred == y)[0]) / len(X)
 
 
-print(rendimiento(nb_tenis, X_tenis, y_tenis))
-
+print("Rendimiento :",rendimiento(nb_tenis, X_tenis, y_tenis),"\n")
+# 0.9285714285714286
 
 
 # --------------------------
@@ -416,7 +425,7 @@ print(rendimiento(nb_tenis, X_tenis, y_tenis))
 
 
 # - Votos de congresistas US
-print("-----NAIVE BAYER ------\n")
+print("-----APLICACIÓN DE NAIVE BAYES ------\n")
 print("VOTOS DE CONGRESISTAS US \n")
 
 X_votos = carga_datos.X_votos
@@ -455,6 +464,8 @@ for k in K:
     print("Rendimiento sobre conjunto de test", rendimiento(nb_credito, X_test_credito, y_test_credito), "\n")
 
 print("------------\n")
+
+
 # - Críticas de películas en IMDB
 """
 En esta sección vamos a estudiar como se comportan distintos clasificadores
@@ -463,17 +474,15 @@ en entrenamiento y prueba, lo cual nos facilita un poco el trabajo.
 
 """
 
-print("----------------------------------------------------------------")
-
 #carga de datos por separado
-xe_imdb=carga_datos.X_train_imdb
-ye_imdb=carga_datos.y_train_imdb
-xt_imdb=carga_datos.X_test_imdb
-yt_imdb=carga_datos.y_test_imdb
+xe_imdb = carga_datos.X_train_imdb
+ye_imdb = carga_datos.y_train_imdb
+xt_imdb = carga_datos.X_test_imdb
+yt_imdb = carga_datos.y_test_imdb
 
 print("CRITICAS DE PELICULAS EN IMDB con Naive Bayes\n")
 
-Kimdb = [0.5, 1, 5, 25, 100,250,300]
+Kimdb = [0.5, 1, 5, 25, 100, 250, 300]
 
 for k in Kimdb:
     print("k=", k)
@@ -482,7 +491,7 @@ for k in Kimdb:
     print("Rendimiento sobre conjunto de entrenamiento", rendimiento(nb_imdb, xe_imdb, ye_imdb))
     print("Rendimiento sobre conjunto de test", rendimiento(nb_imdb, xt_imdb, yt_imdb), "\n")
 
-
+print("----------------------------------------------------------------")
 '''
 Para los valores de la lista Kimdb hemos creado un clasificador NaiveBayes
 y hemos obtenido los siguientes resultados:
@@ -612,6 +621,8 @@ print("Test validación cruzada con los votos")
 Xe_votos = carga_datos.X_votos
 ye_votos = carga_datos.y_votos
 print("Rendimiento:", rendimiento_validacion_cruzada(NaiveBayes, {"k": 0.1}, Xe_votos, ye_votos, n=4))
+#  nos da 0.8950761509172724
+
 
 # ========================================================
 # EJERCICIO 4: MODELOS LINEALES PARA CLASIFICACIÓN BINARIA
@@ -837,8 +848,9 @@ lr_cancer = RegresionLogisticaMiniBatch(rate=0.1, rate_decay=True, normalizacion
 
 lr_cancer.entrena(Xe_cancer, ye_cancer)
 
-rendimiento(lr_cancer, normaliza(Xe_cancer), ye_cancer)
-
+print("Test Regresion logistica sobre los datos del cancer.")
+rendimiento("Rendimiento:", lr_cancer, normaliza(Xe_cancer), ye_cancer)
+# sale 0.986784140969163
 
 
 
@@ -1191,10 +1203,10 @@ def leer_label(fichero):
 
 
 Xtrain_digitos = leer_digitos("datos/trainingimages").reshape(5000, 28*29)[0:500]
-ytrain_digitos = leer_label("datos/traininglabels")[0:500]
+ytrain_digitos = leer_label("datos/traininglabels")[0:600]
 
-Xtest_digitos = leer_digitos("datos/testimages").reshape(1000, 28*29)[0:200]
-ytest_digitos = leer_label("datos/testlabels")[0:200]
+Xtest_digitos = leer_digitos("datos/testimages").reshape(1000, 28*29)
+ytest_digitos = leer_label("datos/testlabels")
 
 Xval_digitos = leer_digitos("datos/validationimages").reshape(1000, 28*29)
 yval_digitos = leer_label("datos/validationlabels")
@@ -1202,7 +1214,17 @@ yval_digitos = leer_label("datos/validationlabels")
 reg_digitos = RL_OvR(np.arange(10), rate=0.001, batch_tam=20, n_epochs=1000)
 reg_digitos.entrena(Xtrain_digitos, ytrain_digitos)  # largo en tiempo = mas o menos 30 minutos para 500 datos
 
+print("RL con rate=0.001, batch_tam=20, n_epochs=1000)
 print("Rendimento sobre los datos de entranamiento", rendimiento(reg_digitos, Xtrain_digitos, ytrain_digitos))
 # nos da 1 de rendimiento para los datos de entranamiento  -> sobreajuste
 print("Rendimiento sobre los datos de test", rendimiento(reg_digitos, Xtest_digitos, ytest_digitos))
 # 0.79 de rendimiento para los datos de test
+
+reg_digitos = RL_OvR(np.arange(10), rate=0.3, batch_tam=50, n_epochs=100)
+reg_digitos.entrena(Xtrain_digitos, ytrain_digitos)  # largo en tiempo = mas o menos 30 minutos para 500 datos
+
+print("RL con rate=0.3, batch_tam=256, n_epochs=950")
+print("Rendimento sobre los datos de entranamiento", rendimiento(reg_digitos, Xtrain_digitos, ytrain_digitos))
+# nos da 1 de rendimiento para los datos de entranamiento -> sobreajuste
+print("Rendimiento sobre los datos de test", rendimiento(reg_digitos, Xtest_digitos, ytest_digitos))
+# 0.802 de rendimiento para los datos de test
