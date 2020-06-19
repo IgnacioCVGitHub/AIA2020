@@ -849,7 +849,8 @@ lr_cancer = RegresionLogisticaMiniBatch(rate=0.1, rate_decay=True, normalizacion
 lr_cancer.entrena(Xe_cancer, ye_cancer)
 
 print("Test Regresion logistica sobre los datos del cancer.")
-rendimiento("Rendimiento:", lr_cancer, normaliza(Xe_cancer), ye_cancer)
+print("Rendimiento:")
+rendimiento(lr_cancer, normaliza(Xe_cancer), ye_cancer)
 # sale 0.986784140969163
 
 
